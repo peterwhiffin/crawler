@@ -21,40 +21,46 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        Vector3 restPosition = Vector3.zero;
+        SetRestPosition();
+        MoveLegs();      
+    }
 
-        foreach (Leg leg1 in m_Legs)
+    private void MoveLegs()
+    {
+        if (Vector3.Distance(transform.position, m_RestPosition.position) < m_CrawlerSettings.LegMoveThreshold ||
+            !m_Legs[m_LegIndex].IsDoneMoving())
         {
-            restPosition += leg1.m_targetPosition.position;
+            return;
         }
 
-        restPosition += transform.position;
+        int nextIndex = m_LegIndex + 1;
+        if (nextIndex == m_Legs.Count)
+        {
+            nextIndex = 0;
+        }
+
+        if (!GetHits(m_Legs[nextIndex].m_Orientation.horizontal, m_Legs[nextIndex].m_Orientation.vertical) ||
+            Vector3.Distance(m_Legs[nextIndex].transform.position, m_BestHit) < m_CrawlerSettings.MinimumLegMoveDistance)
+        {
+            return;
+        }
+
+        m_LegIndex = nextIndex;
+        m_Legs[m_LegIndex].m_targetPosition.position = m_BestHit;
+        m_Legs[m_LegIndex].StartMove();
+    }
+
+    private void SetRestPosition()
+    {
+        Vector3 restPosition = transform.position;
+
+        foreach (Leg leg in m_Legs)
+        {
+            restPosition += leg.m_targetPosition.position;
+        }
+
         restPosition /= m_Legs.Count + 1;
         m_RestPosition.position = restPosition;
-
-        if (Vector3.Distance(transform.position, m_RestPosition.position) > m_CrawlerSettings.LegMoveThreshold)
-        {
-            if (m_Legs[m_LegIndex].IsDoneMoving())
-            {
-                m_LegIndex++;
-
-                if (m_LegIndex > m_Legs.Count - 1)
-                {
-                    m_LegIndex = 0;
-                }
-
-                bool hitFound = GetHits(m_Legs[m_LegIndex].m_Orientation.horizontal, m_Legs[m_LegIndex].m_Orientation.vertical);
-
-                if (hitFound)
-                {
-                    if (Vector3.Distance(m_Legs[m_LegIndex].transform.position, m_BestHit) > m_CrawlerSettings.MinimumLegMoveDistance)
-                    {
-                        m_Legs[m_LegIndex].m_targetPosition.position = m_BestHit;
-                        m_Legs[m_LegIndex].StartMove();
-                    }
-                }
-            }
-        }
     }
 
     private bool GetHits(float x, float y)
