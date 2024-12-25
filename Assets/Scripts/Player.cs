@@ -32,7 +32,8 @@ public class Player : MonoBehaviour
     public Transform testForward;
     public Vector2 m_LastInput;
     public Dictionary<RaycastHit2D, float> m_TempHits = new();
-    public RaycastHit2D m_ClosestHit;
+    public RaycastHit2D m_BestHit;
+    public float m_PlayerPositionBias;
 
     private void Update()
     {
@@ -40,30 +41,23 @@ public class Player : MonoBehaviour
 
         foreach (Leg leg1 in m_Legs)
         {
-            restPosition += leg1.transform.position;
+            restPosition += leg1.m_targetPosition.position;
         }
 
         restPosition += transform.position;
-
         restPosition = restPosition / 5;
-
         m_RestPosition.position = restPosition;
-
 
         if (Vector3.Distance(transform.position, m_RestPosition.position) > m_LegMoveThreshold)
         {
             if (m_Legs[m_LegIndex].IsDoneMoving())
             {
-
                 m_LegIndex++;
-
-
 
                 if (m_LegIndex > m_Legs.Count - 1)
                 {
                     m_LegIndex = 0;
                 }
-
 
                 bool hitFound = GetHits(m_Legs[m_LegIndex].m_Orientation.horizontal, m_Legs[m_LegIndex].m_Orientation.vertical);
                 if (m_LegsWithPosition.Contains(m_Legs[m_LegIndex]))
@@ -71,269 +65,181 @@ public class Player : MonoBehaviour
                     m_LegsWithPosition.Remove(m_Legs[m_LegIndex]);
                 }
 
-
                 if (hitFound)
                 {
-                    if (Vector3.Distance(m_Legs[m_LegIndex].transform.position, m_ClosestHit.point) > m_MinimumLegMoveDistance)
+                    if (Vector3.Distance(m_Legs[m_LegIndex].transform.position, m_BestHit.point) > m_MinimumLegMoveDistance)
                     {
-
-                        m_Legs[m_LegIndex].m_targetPosition.position = m_ClosestHit.point;
+                        m_Legs[m_LegIndex].m_targetPosition.position = m_BestHit.point;
+                        m_Legs[m_LegIndex].StartMove();
                     }
                     m_LegsWithPosition.Add(m_Legs[m_LegIndex]);
+                    
                 }
                 else
                 {
-                    if (m_LegsWithPosition.Count > 0)
-                    {
-                        var newPosition = m_LegsWithPosition[0].transform.position;
-                        float x = m_Legs[m_LegIndex].m_Orientation.horizontal;
-                        float y = m_Legs[m_LegIndex].m_Orientation.vertical;
+                    //if (m_LegsWithPosition.Count > 0)
+                    //{
+                    //    var newPosition = m_LegsWithPosition[0].transform.position;
+                    //    float x = m_Legs[m_LegIndex].m_Orientation.horizontal;
+                    //    float y = m_Legs[m_LegIndex].m_Orientation.vertical;
+                    //    Vector3 origin = transform.position;
+                    //    Vector3 max = origin + (transform.right * x * m_LegReach) + (transform.up * y * m_LegReach);
 
-                        Vector3 origin = transform.position;
+                    //    for (int i = 0; i < m_LegsWithPosition.Count; i++)
+                    //    {
+                    //        if (Vector3.Distance(m_LegsWithPosition[i].transform.position, max) < Vector3.Distance(newPosition, max))
+                    //        {
+                    //            newPosition = m_LegsWithPosition[i].m_targetPosition.position;
+                    //        }
+                    //    }
 
-                        Vector3 max = origin + (transform.right * x * m_LegReach) + (transform.up * y * m_LegReach);
-
-
-
-                        for (int i = 0; i < m_LegsWithPosition.Count; i++)
-                        {
-                            if (Vector3.Distance(m_LegsWithPosition[i].transform.position, max) < Vector3.Distance(newPosition, max))
-                            {
-                                newPosition = m_LegsWithPosition[i].m_targetPosition.position;
-                            }
-                        }
-
-                        m_Legs[m_LegIndex].m_targetPosition.position = newPosition;
-                        //m_LegsWithPosition.Add(m_Legs[m_LegIndex]);
-                    }
+                    //    m_Legs[m_LegIndex].m_targetPosition.position = newPosition;
+                    //}
                 }
 
-
-                m_Legs[m_LegIndex].StartMove();
-
-            }
-            else
-            {
-                Debug.Log("current leg not done moving");
+               // m_Legs[m_LegIndex].StartMove();
             }
         }
-        else
-        {
-            Debug.Log("player not past move threshold");
-        }
-        //foreach (Leg leg in m_Legs)
-        //{
-        //    if (!leg.m_IsDoneMoving)
-        //        continue;
-
-        //    var xPos = new Vector3(leg.m_RayPosition.position.x, transform.position.y, 0f);
-        //    var yPos = new Vector3(transform.position.x, leg.m_RayPosition.position.y, 0f);
-        //    var xDir = leg.m_RayPosition.position - xPos;
-        //    var yDir = leg.m_RayPosition.position - yPos;
-
-        //    RaycastHit2D legHitXPos = Physics2D.Raycast(xPos, xDir, Vector3.Distance(xPos, leg.m_RayPosition.position), m_LegLayerMask);
-        //    RaycastHit2D legHitYPos = Physics2D.Raycast(yPos, yDir, Vector3.Distance(yPos, leg.m_RayPosition.position), m_LegLayerMask);
-        //    RaycastHit2D legHit = Physics2D.Raycast(transform.position, leg.m_RayPosition.position - transform.position, Vector3.Distance(transform.position, leg.m_RayPosition.position), m_LegLayerMask);
-        //    RaycastHit2D reverseLegHit = Physics2D.Raycast(leg.m_RayPosition.position, transform.position - leg.m_RayPosition.position, Vector3.Distance(transform.position, leg.m_RayPosition.position), m_LegLayerMask);
-
-        //    if (legHitXPos && legHitXPos.fraction != 0f) 
-        //    {
-        //        if (!m_Hits.ContainsKey(Vector3.Distance(transform.position, legHitXPos.point)))
-        //            m_Hits.Add(Vector3.Distance(transform.position, legHitXPos.point), legHitXPos);
-        //    }
-
-        //    if (legHitYPos && legHitYPos.fraction != 0f)
-        //    {
-        //        if (!m_Hits.ContainsKey(Vector3.Distance(transform.position, legHitYPos.point)))
-        //            m_Hits.Add(Vector3.Distance(transform.position, legHitYPos.point), legHitYPos);
-        //    }
-
-        //    if (legHit && legHit.fraction != 0f)
-        //    {
-        //        if (!m_Hits.ContainsKey(Vector3.Distance(transform.position, legHit.point)))
-        //            m_Hits.Add(Vector3.Distance(transform.position, legHit.point), legHit);
-        //    }
-
-        //    if (reverseLegHit && reverseLegHit.fraction != 0f)
-        //    {
-        //        if (!m_Hits.ContainsKey(Vector3.Distance(transform.position, reverseLegHit.point)))
-        //            m_Hits.Add(Vector3.Distance(transform.position, reverseLegHit.point), reverseLegHit);
-        //    }
-
-        //    float hitKey = -1f;
-
-        //    foreach (var hit in m_Hits)
-        //    {
-        //        if (hit.Key > hitKey)
-        //        {
-        //            hitKey = hit.Key;
-        //        }
-        //    }
-
-        //    if (hitKey >= 0f)
-        //    {
-        //        if (Vector3.Distance(leg.transform.position, m_Hits[hitKey].point) > m_MinimumLegMoveDistance)
-        //        {
-        //            leg.m_targetPosition.position = m_Hits[hitKey].point;
-        //            leg.m_targetPosition.SetParent(m_Hits[hitKey].transform, true);
-        //        }
-        //        m_LegsWithPosition.Add(leg);
-        //        leg.m_IsHosted = false;
-        //    }
-        //    else
-        //    {
-        //        m_LegsWithoutPosition.Add(leg);
-        //    }
-
-        //    m_Hits.Clear();
-        //}
-
-        //if (m_LegsWithPosition.Count > 0)
-        //{
-        //    foreach (Leg lostLeg in m_LegsWithoutPosition)
-        //    {
-
-
-        //        if (lostLeg.m_IsHosted)
-        //        {
-        //            if (Vector3.Distance(lostLeg.transform.position, transform.position) < m_MaxLegDistance)
-        //            {
-        //                continue;
-        //            }
-        //        }
-
-
-        //        lostLeg.m_IsHosted = true;
-        //        Leg hostLeg = m_LegsWithPosition[0];
-
-        //        if (m_LegsWithPosition.Count > 1)
-        //        {
-        //            for (int i = 1; i < m_LegsWithPosition.Count; i++)
-        //            {
-        //                if (Vector3.Distance(hostLeg.transform.position, lostLeg.m_RayPosition.position) > Vector3.Distance(m_LegsWithPosition[i].transform.position, lostLeg.m_RayPosition.position))
-        //                {
-        //                    hostLeg = m_LegsWithPosition[i];
-        //                }
-        //            }
-        //        }
-
-        //        RaycastHit2D reverseHit = Physics2D.Raycast(lostLeg.m_RayPosition.position, hostLeg.transform.position - lostLeg.m_RayPosition.position, Vector3.Distance(hostLeg.transform.position, lostLeg.m_RayPosition.position), m_LegLayerMask);
-
-        //        if (reverseHit && reverseHit.fraction != 0)
-        //        {
-        //            lostLeg.m_targetPosition.position = reverseHit.point;
-        //            lostLeg.m_targetPosition.SetParent(reverseHit.transform, true);
-        //        }
-        //        else
-        //        {
-        //            lostLeg.m_targetPosition.position = new Vector3(hostLeg.m_targetPosition.position.x, hostLeg.m_targetPosition.position.y, 0f);
-        //            lostLeg.m_targetPosition.SetParent(hostLeg.m_targetPosition.parent, true);
-        //        }
-
-        //    }
-        //}
-
-        //m_LegsWithPosition.Clear();
-        //m_LegsWithoutPosition.Clear();
-
-
-        //if (Vector3.Distance(transform.position, m_RestPosition.position) > m_LegMoveThreshold)
-        //{
-        //    if (m_Legs[m_LegIndex].IsDoneMoving())
-        //    {
-        //        m_LegIndex++;
-
-        //        if (m_LegIndex > m_Legs.Count - 1)
-        //        {
-        //            m_LegIndex = 0;
-        //        }
-
-        //        m_Legs[m_LegIndex].m_NeedsToMove = true;
-        //    }
-        //}
     }
 
     private bool GetHits(float x, float y)
     {
         bool hitFound = false;
-
-        Vector3 newPosition = transform.position;
+        bool preferredHitFound = false;
+        //Vector3 newPosition = transform.position;
 
         Vector3 origin = transform.position;
         Vector3 forward = origin + (transform.right * x * m_LegReach);
         Vector3 up = origin + (transform.up * y * m_LegReach);
         Vector3 max = origin + (transform.right * x * m_LegReach) + (transform.up * y * m_LegReach);
+        Vector3 reverseXMax = origin + (transform.right * -x * m_LegReach) + (transform.up * y * m_LegReach);
+        Vector3 reverseYMax = origin + (transform.right * x * m_LegReach) + (transform.up * -y * m_LegReach);
+        Vector3 halfY = origin + (transform.up * y * (m_LegReach / 2f));
+        Vector3 halfX = origin + (transform.right * x * (m_LegReach / 2f));
+        Vector3 reverseY = origin + (transform.up * -y * m_LegReach);
+        Vector3 reverseX = origin + (transform.right * -x * m_LegReach);
 
-        RaycastHit2D hitOriginToForward = Physics2D.Raycast(origin, forward - origin, Vector3.Distance(forward, origin), m_LegLayerMask);
+        //RaycastHit2D hitOriginToForward = Physics2D.Raycast(origin, forward - origin, Vector3.Distance(forward, origin), m_LegLayerMask);
         RaycastHit2D hitForwardToMax = Physics2D.Raycast(forward, max - forward, Vector3.Distance(max, forward), m_LegLayerMask);
-        RaycastHit2D hitOriginToUp = Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask);
+        //RaycastHit2D hitOriginToUp = Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask);
         RaycastHit2D hitUpToMax = Physics2D.Raycast(up, max - up, Vector3.Distance(max, up), m_LegLayerMask);
         RaycastHit2D hitOriginToMax = Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_LegLayerMask);
         //RaycastHit2D hitMaxToOrigin = Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_LegLayerMask);
-        RaycastHit2D hitForwardToUp = Physics2D.Raycast(forward, up - forward, Vector3.Distance(forward, up), m_LegLayerMask);
-        RaycastHit2D hitUpToForward = Physics2D.Raycast(up, forward - up, Vector3.Distance(up, forward), m_LegLayerMask);
+        //RaycastHit2D hitForwardToUp = Physics2D.Raycast(forward, up - forward, Vector3.Distance(forward, up), m_LegLayerMask);
+        //RaycastHit2D hitUpToForward = Physics2D.Raycast(up, forward - up, Vector3.Distance(up, forward), m_LegLayerMask);
+       
+        RaycastHit2D hitMaxToForward = Physics2D.Raycast(max, forward - max, Vector3.Distance(max, forward), m_LegLayerMask);
 
-        Vector3 inputBias = new Vector3(m_LastInput.x, m_LastInput.y, 0f);
+        
+        
+        //Vector3 inputBias = new Vector3(m_LastInput.x, m_LastInput.y, 0f);
 
-        if(hitOriginToForward && hitOriginToForward.fraction != 0f)
-        {
-            m_TempHits.Add(hitOriginToForward, Vector3.Distance(hitOriginToForward.point, origin));
-        }
+        //if(hitOriginToForward && hitOriginToForward.fraction != 0f)
+        //{
+        //    m_TempHits.Add(hitOriginToForward, Vector3.Distance(hitOriginToForward.point, origin));
+        //}
 
         if (hitForwardToMax && hitForwardToMax.fraction != 0f)
         {
             m_TempHits.Add(hitForwardToMax, Vector3.Distance(hitForwardToMax.point, origin));
+            preferredHitFound = true;
         }
 
-        if (hitOriginToUp && hitOriginToUp.fraction != 0f)
+        if (hitMaxToForward && hitMaxToForward.fraction != 0f)
         {
-            m_TempHits.Add(hitOriginToUp, Vector3.Distance(hitOriginToUp.point, origin));
+            m_TempHits.Add(hitMaxToForward, Vector3.Distance(hitMaxToForward.point, origin));
+            preferredHitFound = true;
         }
+
+        
+        //if (hitOriginToUp && hitOriginToUp.fraction != 0f)
+        //{
+        //    m_TempHits.Add(hitOriginToUp, Vector3.Distance(hitOriginToUp.point, origin));
+        //}
 
         if (hitUpToMax && hitUpToMax.fraction != 0f)
         {
             m_TempHits.Add(hitUpToMax, Vector3.Distance(hitUpToMax.point, origin));
+            preferredHitFound = true;
         }
 
         if (hitOriginToMax && hitOriginToMax.fraction != 0f)
         {
             m_TempHits.Add(hitOriginToMax, Vector3.Distance(hitOriginToMax.point, origin));
+            preferredHitFound = true;
         }
+
 
         //if (hitMaxToOrigin && hitMaxToOrigin.fraction != 0f)
         //{
         //    m_TempHits.Add(hitMaxToOrigin, Vector3.Distance(hitMaxToOrigin.point, origin));
         //}
 
-        if (hitForwardToUp && hitForwardToUp.fraction != 0f)
-        {
-            m_TempHits.Add(hitForwardToUp, Vector3.Distance(hitForwardToUp.point, origin));
-        }
+        //if (hitForwardToUp && hitForwardToUp.fraction != 0f)
+        //{
+        //    m_TempHits.Add(hitForwardToUp, Vector3.Distance(hitForwardToUp.point, origin));
+        //}
 
-        if (hitUpToForward && hitUpToForward.fraction != 0f)
-        {
-            m_TempHits.Add(hitUpToForward, Vector3.Distance(hitUpToForward.point, origin));
-        }
+        //if (hitUpToForward && hitUpToForward.fraction != 0f)
+        //{
+        //    m_TempHits.Add(hitUpToForward, Vector3.Distance(hitUpToForward.point, origin));
+        //}
 
-        float farthestHit = -1f;
-
-        foreach(var hit in m_TempHits)
+        if (!preferredHitFound)
         {
-            if(hit.Value > farthestHit)
+            RaycastHit2D hitMaxToReverseYMax = Physics2D.Raycast(max, reverseYMax - max, Vector3.Distance(max, reverseYMax), m_LegLayerMask);
+            RaycastHit2D hitUpToReverse = Physics2D.Raycast(up, reverseXMax - up, Vector3.Distance(up, reverseXMax), m_LegLayerMask);
+            RaycastHit2D hitHalfYToReverse = Physics2D.Raycast(halfY, reverseY - halfY, Vector3.Distance(reverseY, halfY), m_LegLayerMask);
+            RaycastHit2D hitHalfXToReverse = Physics2D.Raycast(halfX, reverseX - halfX, Vector3.Distance(reverseX, halfX), m_LegLayerMask);
+
+            if (hitMaxToReverseYMax && hitMaxToReverseYMax.fraction != 0f)
             {
-                farthestHit = hit.Value;
-                m_ClosestHit = hit.Key;
-                hitFound = true;
+                m_TempHits.Add(hitMaxToReverseYMax, Vector3.Distance(hitMaxToReverseYMax.point, origin));
+            }
+
+            if (hitUpToReverse && hitUpToReverse.fraction != 0f)
+            {
+                m_TempHits.Add(hitUpToReverse, Vector3.Distance(hitUpToReverse.point, origin));
+            }
+
+            if (hitHalfYToReverse && hitHalfYToReverse.fraction != 0f)
+            {
+                m_TempHits.Add(hitHalfYToReverse, Vector3.Distance(hitHalfYToReverse.point, origin));
+            }
+
+            if (hitHalfXToReverse && hitHalfXToReverse.fraction != 0f)
+            {
+                m_TempHits.Add(hitHalfXToReverse, Vector3.Distance(hitHalfXToReverse.point, origin));
+            }
+
+
+            float closest = 100f;
+
+            foreach (var hit in m_TempHits)
+            {
+                if (hit.Value < closest)
+                {
+                    closest = hit.Value;
+                    m_BestHit = hit.Key;
+                    hitFound = true;
+                }
+            }
+
+        }
+        else
+        {
+            float farthestHit = -1f;
+
+            foreach (var hit in m_TempHits)
+            {
+                if (hit.Value > farthestHit)
+                {
+                    farthestHit = hit.Value;
+                    m_BestHit = hit.Key;
+                    hitFound = true;
+                }
             }
         }
-
-        //if(m_ClosestHit == hitMaxToOrigin)
-        //{
-        //    if(hitOriginToMax && hitOriginToMax.fraction != 0)
-        //    {
-        //        m_ClosestHit = hitOriginToMax;
-        //    }
-        //}
 
         m_TempHits.Clear();
         return hitFound;
@@ -344,9 +250,10 @@ public class Player : MonoBehaviour
         if ((transform.position - m_RestPosition.position).magnitude < m_MaxSpringStretch)
         {
             m_RigidBody.AddForce(m_MoveInput.normalized * m_Speed * Time.fixedDeltaTime);
-        }
 
-        if(m_MoveInput == Vector2.zero)
+        }       
+
+        if (m_MoveInput == Vector2.zero)
         {
             m_RigidBody.AddForce((m_RestPosition.position - transform.position) * m_SpringForce * Time.fixedDeltaTime);
         }
