@@ -1,51 +1,49 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Leg : MonoBehaviour
 {
-    [Serializable]
-    public struct LegOrientation
-    {
-        public int horizontal;
-        public int vertical;
-    }
-    
-    public Transform m_targetPosition;
-    public Player m_Player;
-    public bool m_IsDoneMoving;
-    public Transform m_RayPosition;
-    public bool m_IsHosted;
-    public bool m_NeedsToMove;
-    public LegOrientation m_Orientation;
-    private float m_TimeElapsed;
-    private bool m_DoMove;
+    private float m_TimeElapsed;    
     private float m_MoveRate;
+    
+    private bool m_DoMove;
 
-    private void Start()
+    [SerializeField] private Transform m_TargetPosition;
+    [SerializeField] private Vector2 m_Orientation;
+    
+    public Vector2 Orientation { get { return m_Orientation; } }
+    public Vector2 TargetPosition { get { return m_TargetPosition.position; } }
+
+    public void Initialize(float moveRate)
     {
-        m_IsDoneMoving = false;
         m_TimeElapsed = 0f;
         m_DoMove = true;
-        m_MoveRate = m_Player.CrawlerSettings.LegMoveRate;
+        m_MoveRate = moveRate;
     }
 
     private void Update()
     {
         if (m_DoMove)
         {
-            transform.position = Vector3.Lerp(transform.position, m_targetPosition.position, m_TimeElapsed / m_MoveRate);
-
             m_TimeElapsed += Time.deltaTime;
+            transform.position = Vector3.Lerp(transform.position, m_TargetPosition.position, m_TimeElapsed / m_MoveRate);
 
-            if (transform.position == m_targetPosition.position)
+            if (transform.position == m_TargetPosition.position)
             {
                 m_DoMove = false;
             }
         }
+        else
+        {
+            transform.position = m_TargetPosition.position;
+        }
     }
 
-    public void StartMove()
+    public void StartMove(Transform parent, Vector3 targetPosition)
     {
+        m_TargetPosition.SetParent(parent);
+        m_TargetPosition.position = targetPosition;
         m_TimeElapsed = 0f;
         m_DoMove = true;
     }

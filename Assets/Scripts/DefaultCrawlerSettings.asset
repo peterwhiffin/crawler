@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bed16112b2a7047905e911ecf67638, type: 3}
   m_Name: DefaultCrawlerSettings
   m_EditorClassIdentifier: 
-  <MoveSpeed>k__BackingField: 2800
-  <MinimumLegMoveDistance>k__BackingField: 0.15
-  <LegMoveRate>k__BackingField: 0.13
-  <LegMoveThreshold>k__BackingField: 0.24
-  <LegReach>k__BackingField: 1.2
-  <SpringForce>k__BackingField: 82.3
-  <DampForce>k__BackingField: 0.18
-  <MaxSpringStretch>k__BackingField: 1.11
+  <MoveSpeed>k__BackingField: 132.5
+  <MinimumLegMoveDistance>k__BackingField: 0.11
+  <LegMoveRate>k__BackingField: 0.1
+  <LegMoveThreshold>k__BackingField: 0
+  <LegReach>k__BackingField: 1.31
+  <SpringForce>k__BackingField: 56.2
+  <DampForce>k__BackingField: 0.9
+  <MaxSpringStretch>k__BackingField: 1.17
+  <WallSuspensionDistance>k__BackingField: 0.74
+  <WallSuspensionSpringStrength>k__BackingField: 153.6
+  <WallSuspensionDamperStrength>k__BackingField: 23.51

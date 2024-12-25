@@ -11,4 +11,7 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float SpringForce { get; private set; }
     [field: SerializeField] public float DampForce { get; private set; }
     [field: SerializeField] public float MaxSpringStretch { get; private set; }
+    [field: SerializeField] public float WallSuspensionDistance { get; private set; }
+    [field: SerializeField] public float WallSuspensionSpringStrength { get; private set; }
+    [field: SerializeField] public float WallSuspensionDamperStrength { get; private set; }
 }
