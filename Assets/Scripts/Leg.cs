@@ -19,19 +19,21 @@ public class Leg : MonoBehaviour
     public LegOrientation m_Orientation;
     private float m_TimeElapsed;
     private bool m_DoMove;
+    private float m_MoveRate;
 
     private void Start()
     {
         m_IsDoneMoving = false;
         m_TimeElapsed = 0f;
         m_DoMove = true;
+        m_MoveRate = m_Player.CrawlerSettings.LegMoveRate;
     }
 
     private void Update()
     {
         if (m_DoMove)
         {
-            transform.position = Vector3.Lerp(transform.position, m_targetPosition.position, m_TimeElapsed / m_Player.m_LegMoveRate);
+            transform.position = Vector3.Lerp(transform.position, m_targetPosition.position, m_TimeElapsed / m_MoveRate);
 
             m_TimeElapsed += Time.deltaTime;
 
