@@ -49,12 +49,11 @@ public class Player : MonoBehaviour
 
     private Vector2 RestrainToRestPosition()
     {
-        float distanceToRestPosition = Vector2.Distance(transform.position, m_RestPosition.position);
-        Vector2 direction = (m_RestPosition.position - transform.position).normalized;
-        float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-        float spring = distanceToRestPosition > m_CrawlerSettings.MaxSpringStretch ? m_CrawlerSettings.MoveSpeed / distanceToRestPosition : m_CrawlerSettings.SpringForce;
-        float force = (distanceToRestPosition * spring) - (velocity * m_CrawlerSettings.DampForce);
-        return direction * force;
+        Vector2 direction = m_RestPosition.position - transform.position;
+        float distance = direction.magnitude;
+        float velocity = Vector2.Dot(direction.normalized, m_RigidBody.linearVelocity);
+        float spring = distance > m_CrawlerSettings.MaxSpringStretch ? m_CrawlerSettings.MoveSpeed / distance : m_CrawlerSettings.SpringForce;
+        return direction.normalized * ((distance * spring) - (velocity * m_CrawlerSettings.DampForce));
     }
 
     private Vector2 FloatOffTerrain()
