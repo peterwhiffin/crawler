@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 {
     private List<RaycastHit2D> m_TempHits = new();
     private RaycastHit2D m_BestHit;
-    private Vector2 m_MoveInput;
+    private Vector2 m_MoveInput = Vector2.zero;
     private int m_LegIndex;
 
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
@@ -26,6 +26,8 @@ public class Player : MonoBehaviour
         foreach(Leg leg in m_Legs)
         {
             leg.Initialize(m_CrawlerSettings.LegMoveRate);
+            GetLegHits(leg.Orientation);
+            leg.StartMove(m_BestHit.transform, m_BestHit.point);
         }
     }
 
@@ -47,12 +49,11 @@ public class Player : MonoBehaviour
 
     private Vector2 RestrainToRestPosition()
     {
-        bool isMaxDistance = Vector3.Distance(transform.position, m_RestPosition.position) > m_CrawlerSettings.MaxSpringStretch;
+        float distanceToRestPosition = Vector2.Distance(transform.position, m_RestPosition.position);
         Vector2 direction = (m_RestPosition.position - transform.position).normalized;
-        float offset = Vector2.Distance(m_RestPosition.position, transform.position);
         float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-        float spring = isMaxDistance ? m_CrawlerSettings.MoveSpeed / offset : m_CrawlerSettings.SpringForce;
-        float force = (offset * spring) - (velocity * m_CrawlerSettings.DampForce);
+        float spring = distanceToRestPosition > m_CrawlerSettings.MaxSpringStretch ? m_CrawlerSettings.MoveSpeed / distanceToRestPosition : m_CrawlerSettings.SpringForce;
+        float force = (distanceToRestPosition * spring) - (velocity * m_CrawlerSettings.DampForce);
         return direction * force;
     }
 
