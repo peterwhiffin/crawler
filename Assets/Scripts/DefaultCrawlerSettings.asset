@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bed16112b2a7047905e911ecf67638, type: 3}
   m_Name: DefaultCrawlerSettings
   m_EditorClassIdentifier: 
-  <MoveSpeed>k__BackingField: 262.2
+  <MoveSpeed>k__BackingField: 84
   <MinimumLegMoveDistance>k__BackingField: 0.33
   <LegMoveRate>k__BackingField: 0.15
   <LegMoveThreshold>k__BackingField: 0.42
@@ -23,6 +23,3 @@ MonoBehaviour:
   <WallSuspensionDistance>k__BackingField: 0.65
   <WallSuspensionSpringStrength>k__BackingField: 73.6
   <WallSuspensionDamperStrength>k__BackingField: 16.9
-  <OffsetMultiplier>k__BackingField: 1.5
-  <SpringMultiplier>k__BackingField: 0.57
-  <DampingMultiplier>k__BackingField: 1.15
