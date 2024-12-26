@@ -35,96 +35,56 @@ public class Player : MonoBehaviour
     }
 
     private void Update()
-    {
+    {     
+        MoveLegs();
         SetRestPosition();
-        MoveLegs();      
     }
 
     private void FixedUpdate()
     {
-        Vector2 springForce = Vector2.zero;
+        m_RigidBody.AddForce((m_CrawlerSettings.MoveSpeed * m_MoveInput.normalized) + RestrainToRestPosition() + FloatOffTerrain());
+    }
+
+    private Vector2 RestrainToRestPosition()
+    {
+        bool isMaxDistance = Vector3.Distance(transform.position, m_RestPosition.position) > m_CrawlerSettings.MaxSpringStretch;
         Vector2 direction = (m_RestPosition.position - transform.position).normalized;
         float offset = Vector2.Distance(m_RestPosition.position, transform.position);
         float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-        float force = (offset * m_CrawlerSettings.SpringForce) - (velocity * m_CrawlerSettings.DampForce);
-        springForce = direction * force;
+        float spring = isMaxDistance ? m_CrawlerSettings.MoveSpeed / offset : m_CrawlerSettings.SpringForce;
+        float force = (offset * spring) - (velocity * m_CrawlerSettings.DampForce);
+        return direction * force;
+    }
 
-        if (m_MoveInput == Vector2.zero)
+    private Vector2 FloatOffTerrain()
+    {
+        RaycastHit2D up = Physics2D.Raycast(transform.position, transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
+        RaycastHit2D down = Physics2D.Raycast(transform.position, -transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
+        RaycastHit2D right = Physics2D.Raycast(transform.position, transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
+        RaycastHit2D left = Physics2D.Raycast(transform.position, -transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);        
+        Vector2 finalForce = Vector2.zero;
+
+        if (up != down)
         {
-            direction = (m_RestPosition.position - transform.position).normalized;
-            offset = Vector2.Distance(m_RestPosition.position, transform.position);
-            velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-            force = (offset * m_CrawlerSettings.SpringForce) - (velocity * m_CrawlerSettings.DampForce);
-            springForce = direction * force;
-        }       
-        else if (Vector3.Distance(transform.position, m_RestPosition.position) > m_CrawlerSettings.MaxSpringStretch - .1f)
-        {
-            Vector3 pos = m_RestPosition.position + (transform.position - m_RestPosition.position).normalized * m_CrawlerSettings.MaxSpringStretch;
-            direction = (pos - transform.position).normalized;
-            offset = m_CrawlerSettings.MaxSpringStretch - Vector2.Distance(m_RestPosition.position, transform.position);
-            velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-            force = (offset * m_CrawlerSettings.SpringForce) - (velocity * m_CrawlerSettings.DampForce);
-            springForce = direction * force;
+            m_TempHits.Add(up ? up : down);
         }
 
-        Vector2 moveForce = m_CrawlerSettings.MoveSpeed * m_MoveInput.normalized;
-        Vector2 origin = transform.position;
-
-        RaycastHit2D up = Physics2D.Raycast(origin, transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
-        RaycastHit2D down = Physics2D.Raycast(origin, -transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
-        RaycastHit2D right = Physics2D.Raycast(origin, transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
-        RaycastHit2D left = Physics2D.Raycast(origin, -transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
-
-        Vector2 verticalForce = Vector2.zero;
-        Vector2 horizontalForce = Vector2.zero;
-
-        if (!(up && down))
+        if (left != right)
         {
-            if (up)
-            {
-                direction = (origin - up.point).normalized;
-                offset = m_CrawlerSettings.WallSuspensionDistance - up.distance;
-                velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-                force = (offset * m_CrawlerSettings.WallSuspensionSpringStrength) - (velocity * m_CrawlerSettings.WallSuspensionDamperStrength);
-
-                verticalForce = direction * force;
-            }
-            else if (down)
-            {
-                direction = (origin - down.point).normalized;
-                offset = m_CrawlerSettings.WallSuspensionDistance - down.distance;
-                velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-                force = (offset * m_CrawlerSettings.WallSuspensionSpringStrength) - (velocity * m_CrawlerSettings.WallSuspensionDamperStrength);
-
-                verticalForce = direction * force;
-            }
+            m_TempHits.Add(left ? left : right);
         }
 
-        if (!(left && right))
+        foreach(var hit in m_TempHits)
         {
-            if (left)
-            {
-                direction = (origin - left.point).normalized;
-                offset = m_CrawlerSettings.WallSuspensionDistance - left.distance;
-                velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-                force = (offset * m_CrawlerSettings.WallSuspensionSpringStrength) - (velocity * m_CrawlerSettings.WallSuspensionDamperStrength);
-
-                horizontalForce = direction * force;
-            }
-            else if (right)
-            {
-                direction = (origin - right.point).normalized;
-                offset = m_CrawlerSettings.WallSuspensionDistance - right.distance;
-                velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-                force = (offset * m_CrawlerSettings.WallSuspensionSpringStrength) - (velocity * m_CrawlerSettings.WallSuspensionDamperStrength);
-
-                horizontalForce = direction * force;
-            }
+            Vector2 direction = (m_RigidBody.position - hit.point).normalized;
+            float offset = m_CrawlerSettings.WallSuspensionDistance - hit.distance;
+            float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
+            float force = (offset * m_CrawlerSettings.WallSuspensionSpringStrength) - (velocity * m_CrawlerSettings.WallSuspensionDamperStrength);
+            finalForce += direction * force;
         }
 
-
-
-        m_RigidBody.AddForce(springForce + moveForce + verticalForce + horizontalForce);
+        m_TempHits.Clear();
+        return finalForce;
     }
 
     private void MoveLegs()
@@ -141,7 +101,7 @@ public class Player : MonoBehaviour
             nextIndex = 0;
         }
 
-        if (!GetHits(m_Legs[nextIndex].Orientation) ||
+        if (!GetLegHits(m_Legs[nextIndex].Orientation) ||
             Vector3.Distance(m_Legs[nextIndex].transform.position, m_BestHit.point) < m_CrawlerSettings.MinimumLegMoveDistance)
         {
             return;
@@ -165,7 +125,7 @@ public class Player : MonoBehaviour
         m_RestPosition.position = restPosition;       
     }
 
-    private bool GetHits(Vector2 orientation)
+    private bool GetLegHits(Vector2 orientation)
     {
         bool hitFound = false;
         float farthestHit = -1f;

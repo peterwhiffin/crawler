@@ -11,7 +11,8 @@ public class Leg : MonoBehaviour
 
     [SerializeField] private Transform m_TargetPosition;
     [SerializeField] private Vector2 m_Orientation;
-    
+    [SerializeField] private CrawlerSettings m_CrawlerSettings;
+
     public Vector2 Orientation { get { return m_Orientation; } }
     public Vector2 TargetPosition { get { return m_TargetPosition.position; } }
 
@@ -27,17 +28,12 @@ public class Leg : MonoBehaviour
         if (m_DoMove)
         {
             m_TimeElapsed += Time.deltaTime;
-            transform.position = Vector3.Lerp(transform.position, m_TargetPosition.position, m_TimeElapsed / m_MoveRate);
+            transform.position = Vector3.Lerp(transform.position, m_TargetPosition.position, m_TimeElapsed / m_CrawlerSettings.LegMoveRate);
+            m_DoMove = transform.position != m_TargetPosition.position;
+            return;
+        }
 
-            if (transform.position == m_TargetPosition.position)
-            {
-                m_DoMove = false;
-            }
-        }
-        else
-        {
-            transform.position = m_TargetPosition.position;
-        }
+        transform.position = m_TargetPosition.position;
     }
 
     public void StartMove(Transform parent, Vector3 targetPosition)
