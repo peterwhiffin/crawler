@@ -27,7 +27,7 @@ public class Leg : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position == m_TargetPosition.position || m_TimeElapsed >= m_CrawlerSettings.LegMoveRate)
+        if (m_TimeElapsed >= m_CrawlerSettings.LegMoveRate)
         {
             m_DoMove = false;
         }
@@ -47,11 +47,13 @@ public class Leg : MonoBehaviour
                
     }
 
-    public void SetTarget(Transform parent, Vector3 targetPosition, Vector3 targetNormal)
+    public void SetTarget(Transform parent, Vector2 targetPosition, Vector2 targetNormal)
     {
+        m_TargetPosition.SetParent(null);
+        m_TargetPosition.up = targetNormal;
         m_TargetPosition.SetParent(parent);
         m_TargetPosition.position = targetPosition;
-        m_TargetPosition.up = targetNormal;
+        
         transform.up = targetNormal;
     }
 

@@ -21,11 +21,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform m_RestPosition;
     [SerializeField] private List<Leg> m_Legs = new();  
     [SerializeField] private LayerMask m_LegLayerMask;
-    
+    [SerializeField] private Transform m_PlayerGraphic;
     public CrawlerSettings CrawlerSettings { get { return m_CrawlerSettings; } }
 
     private void Start()
     {
+        Physics2D.queriesStartInColliders = false;
         foreach(Leg leg in m_Legs)
         {
             leg.Initialize(m_CrawlerSettings.LegMoveRate);
@@ -61,7 +62,7 @@ public class Player : MonoBehaviour
     {
         var lookTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
 
-        transform.up = lookTarget - transform.position;
+        m_PlayerGraphic.up = lookTarget - transform.position;
     }
 
     private Vector2 RestrainToRestPosition()
@@ -73,6 +74,7 @@ public class Player : MonoBehaviour
         {
             if (distance < m_CrawlerSettings.MaxSpringStretch)
             {
+                
                 return Vector2.zero;
             }
         }
@@ -178,8 +180,7 @@ public class Player : MonoBehaviour
 
     private bool GetLegHits(Vector2 orientation)
     {       
-        bool hitFound = false;
-        float farthestHit = -1f;      
+             
         float maxDistance = m_CrawlerSettings.LegReach;
         Vector3 origin = transform.position;
         Vector3 forward = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right);
@@ -192,13 +193,9 @@ public class Player : MonoBehaviour
         RaycastHit2D originToMax = Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_LegLayerMask);
         RaycastHit2D forwardToMax = Physics2D.Raycast(forward, max - forward, Vector3.Distance(forward, max), m_LegLayerMask);
         RaycastHit2D upToMax = Physics2D.Raycast(up, max - up, Vector3.Distance(up, max), m_LegLayerMask);
-        
+        RaycastHit2D originToForward = Physics2D.Raycast(origin, forward - origin, Vector3.Distance(origin, forward), m_LegLayerMask);
+        RaycastHit2D originToUp = Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask);
         m_TempHits.Clear();
-
-        if (!originToMax)
-        {
-            m_TempHits.Add(Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_LegLayerMask));
-        }
 
         if (!forwardToMax)
         {
@@ -209,24 +206,56 @@ public class Player : MonoBehaviour
         {
             m_TempHits.Add(Physics2D.Raycast(max, up - max, Vector3.Distance(max, up), m_LegLayerMask));
         }
+        
+        
+        if (FindFarthestHit())
+            return true;
 
-        if (!Physics2D.Raycast(origin, forward - origin, Vector3.Distance(origin, forward), m_LegLayerMask))
+        m_TempHits.Clear();
+
+        if (!originToForward)
         {
             m_TempHits.Add(forwardToMax);
         }
 
-        if (!Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask))
+        if (!originToUp)
         {
             m_TempHits.Add(upToMax);
         }
 
+        if(FindFarthestHit()) 
+            return true;
+
+        m_TempHits.Clear();
+        if (!originToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_LegLayerMask));
+        }
+
+        if(FindFarthestHit()) 
+            return true;
+
+        m_TempHits.Clear();
         m_TempHits.Add(originToMax);
+
+        if(FindFarthestHit())
+            return true;
+
+        m_TempHits.Clear();
         m_TempHits.Add(Physics2D.Raycast(halfX, reverseY - halfX, Vector3.Distance(halfX, reverseY), m_LegLayerMask));
-        m_TempHits.Add(Physics2D.Raycast(halfY, reverseX - halfY, Vector3.Distance(halfY, reverseX), m_LegLayerMask));
+        m_TempHits.Add(Physics2D.Raycast(halfY, reverseX - halfY, Vector3.Distance(halfY, reverseX), m_LegLayerMask)); 
+
+        return FindFarthestHit();
+    }
+
+    private bool FindFarthestHit()
+    {
+        bool hitFound = false;
+        float farthestHit = -1f;
 
         foreach (var hit in m_TempHits)
         {
-            if (!hit || hit.fraction == 0f)
+            if (!hit)
             {
                 continue;
             }
