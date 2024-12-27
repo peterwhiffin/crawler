@@ -5,12 +5,15 @@ using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.NCalc;
 using System.Threading.Tasks;
+using static UnityEngine.UI.Image;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class Player : MonoBehaviour
 {
     private List<RaycastHit2D> m_TempHits = new();
     private RaycastHit2D m_BestHit;
     private Vector2 m_MoveInput = Vector2.zero;
+    private Vector2 m_LookInput = Vector2.zero;
     private int m_LegIndex;
 
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
@@ -27,7 +30,7 @@ public class Player : MonoBehaviour
         {
             leg.Initialize(m_CrawlerSettings.LegMoveRate);
             GetLegHits(leg.Orientation);
-            leg.StartMove(m_BestHit.transform, m_BestHit.point);
+            leg.SnapPosition(m_BestHit.point);
         }
     }
 
@@ -36,10 +39,17 @@ public class Player : MonoBehaviour
         m_MoveInput = context.ReadValue<Vector2>();
     }
 
+    public void OnLookInput(InputAction.CallbackContext context)
+    {
+        m_LookInput = context.ReadValue<Vector2>();
+        //LookAtCursor();
+    }
+
     private void Update()
     {     
         MoveLegs();
         SetRestPosition();
+        LookAtCursor();
     }
 
     private void FixedUpdate()
@@ -47,10 +57,26 @@ public class Player : MonoBehaviour
         m_RigidBody.AddForce((m_CrawlerSettings.MoveSpeed * m_MoveInput.normalized) + RestrainToRestPosition() + FloatOffTerrain());
     }
 
+    private void LookAtCursor()
+    {
+        var lookTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
+
+        transform.up = lookTarget - transform.position;
+    }
+
     private Vector2 RestrainToRestPosition()
     {
         Vector2 direction = m_RestPosition.position - transform.position;
         float distance = direction.magnitude;
+
+        if (m_MoveInput != Vector2.zero)
+        {
+            if (distance < m_CrawlerSettings.MaxSpringStretch)
+            {
+                return Vector2.zero;
+            }
+        }
+
         float velocity = Vector2.Dot(direction.normalized, m_RigidBody.linearVelocity);
         float spring = distance > m_CrawlerSettings.MaxSpringStretch ? m_CrawlerSettings.MoveSpeed / distance : m_CrawlerSettings.SpringForce;
         return direction.normalized * ((distance * spring) - (velocity * m_CrawlerSettings.DampForce));
@@ -58,12 +84,16 @@ public class Player : MonoBehaviour
 
     private Vector2 FloatOffTerrain()
     {
+        if(m_MoveInput != Vector2.zero)
+            return Vector2.zero;
+
+        m_TempHits.Clear();
+        Vector2 finalForce = Vector2.zero;
         RaycastHit2D up = Physics2D.Raycast(transform.position, transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
         RaycastHit2D down = Physics2D.Raycast(transform.position, -transform.up, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
         RaycastHit2D right = Physics2D.Raycast(transform.position, transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);
-        RaycastHit2D left = Physics2D.Raycast(transform.position, -transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);        
-        Vector2 finalForce = Vector2.zero;
-
+        RaycastHit2D left = Physics2D.Raycast(  transform.position, -transform.right, m_CrawlerSettings.WallSuspensionDistance, m_LegLayerMask);   
+        
         if (up != down)
         {
             m_TempHits.Add(up ? up : down);
@@ -83,12 +113,30 @@ public class Player : MonoBehaviour
             finalForce += direction * force;
         }
 
-        m_TempHits.Clear();
         return finalForce;
     }
 
     private void MoveLegs()
     {
+        if (m_MoveInput == Vector2.zero)
+        {
+            bool shouldMove = false;
+
+            foreach (var leg in m_Legs)
+            {
+                if (Vector2.Distance(transform.position, leg.transform.position) > m_CrawlerSettings.MaxLegDistance)
+                {
+                    shouldMove = true;
+                    break;
+                }
+            }
+
+            if (!shouldMove)
+            {
+                return;
+            }
+        }
+
         if (Vector3.Distance(transform.position, m_RestPosition.position) < m_CrawlerSettings.LegMoveThreshold ||
             !m_Legs[m_LegIndex].IsDoneMoving())
         {
@@ -96,19 +144,22 @@ public class Player : MonoBehaviour
         }
 
         int nextIndex = m_LegIndex + 1;
+
         if (nextIndex == m_Legs.Count)
         {
             nextIndex = 0;
         }
+        m_LegIndex = nextIndex;
 
         if (!GetLegHits(m_Legs[nextIndex].Orientation) ||
-            Vector3.Distance(m_Legs[nextIndex].transform.position, m_BestHit.point) < m_CrawlerSettings.MinimumLegMoveDistance)
+            Vector3.Distance(m_Legs[nextIndex].TargetPosition, m_BestHit.point) < m_CrawlerSettings.MinimumLegMoveDistance)
         {
             return;
         }
 
-        m_LegIndex = nextIndex;  
-        m_Legs[m_LegIndex].StartMove(m_BestHit.transform, m_BestHit.point);
+        
+        m_Legs[m_LegIndex].SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
+        m_Legs[m_LegIndex].StartMove();
         return;
     }
 
@@ -126,18 +177,52 @@ public class Player : MonoBehaviour
     }
 
     private bool GetLegHits(Vector2 orientation)
-    {
+    {       
         bool hitFound = false;
-        float farthestHit = -1f;
+        float farthestHit = -1f;      
+        float maxDistance = m_CrawlerSettings.LegReach;
         Vector3 origin = transform.position;
         Vector3 forward = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right);
         Vector3 up = origin + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
         Vector3 max = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right) + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
+        Vector3 halfY = origin + (m_CrawlerSettings.LegReach / 2f * orientation.y * transform.up);
+        Vector3 halfX = origin + (m_CrawlerSettings.LegReach / 2f * orientation.x * transform.right);
+        Vector3 reverseY = origin + (m_CrawlerSettings.LegReach * -orientation.y * transform.up);
+        Vector3 reverseX = origin + (m_CrawlerSettings.LegReach * -orientation.x * transform.right);
+        RaycastHit2D originToMax = Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_LegLayerMask);
+        RaycastHit2D forwardToMax = Physics2D.Raycast(forward, max - forward, Vector3.Distance(forward, max), m_LegLayerMask);
+        RaycastHit2D upToMax = Physics2D.Raycast(up, max - up, Vector3.Distance(up, max), m_LegLayerMask);
+        
+        m_TempHits.Clear();
 
-        m_TempHits.Add(Physics2D.Raycast(forward, max - forward, Vector3.Distance(max, forward), m_LegLayerMask));
-        m_TempHits.Add(Physics2D.Raycast(up, max - up, Vector3.Distance(max, up), m_LegLayerMask));
-        m_TempHits.Add(Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_LegLayerMask));
-        m_TempHits.Add(Physics2D.Raycast(max, forward - max, Vector3.Distance(max, forward), m_LegLayerMask));       
+        if (!originToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_LegLayerMask));
+        }
+
+        if (!forwardToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, forward - max, Vector3.Distance(max, forward), m_LegLayerMask));
+        }
+
+        if (!upToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, up - max, Vector3.Distance(max, up), m_LegLayerMask));
+        }
+
+        if (!Physics2D.Raycast(origin, forward - origin, Vector3.Distance(origin, forward), m_LegLayerMask))
+        {
+            m_TempHits.Add(forwardToMax);
+        }
+
+        if (!Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask))
+        {
+            m_TempHits.Add(upToMax);
+        }
+
+        m_TempHits.Add(originToMax);
+        m_TempHits.Add(Physics2D.Raycast(halfX, reverseY - halfX, Vector3.Distance(halfX, reverseY), m_LegLayerMask));
+        m_TempHits.Add(Physics2D.Raycast(halfY, reverseX - halfY, Vector3.Distance(halfY, reverseX), m_LegLayerMask));
 
         foreach (var hit in m_TempHits)
         {
@@ -146,7 +231,7 @@ public class Player : MonoBehaviour
                 continue;
             }
 
-            float distance = Vector3.Distance(hit.point, origin);
+            float distance = Vector3.Distance(hit.point, transform.position);
 
             if (distance > farthestHit)
             {
@@ -155,41 +240,6 @@ public class Player : MonoBehaviour
                 hitFound = true;
             }
         }
-
-        if (!hitFound)
-        {
-            float closest = 100f;
-            Vector3 halfY = origin + (m_CrawlerSettings.LegReach / 2f * orientation.y * transform.up);
-            Vector3 halfX = origin + (m_CrawlerSettings.LegReach / 2f * orientation.x * transform.right);
-            Vector3 reverseY = origin + (m_CrawlerSettings.LegReach * -orientation.y * transform.up);
-            Vector3 reverseX = origin + (m_CrawlerSettings.LegReach * -orientation.x * transform.right);
-            Vector3 reverseXMax = origin + (m_CrawlerSettings.LegReach * -orientation.x * transform.right) + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
-            Vector3 reverseYMax = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right) + (m_CrawlerSettings.LegReach * -orientation.y * transform.up);
-
-            m_TempHits.Add(Physics2D.Raycast(max, reverseYMax - max, Vector3.Distance(max, reverseYMax), m_LegLayerMask));
-            m_TempHits.Add(Physics2D.Raycast(up, reverseXMax - up, Vector3.Distance(up, reverseXMax), m_LegLayerMask));
-            m_TempHits.Add(Physics2D.Raycast(halfY, reverseY - halfY, Vector3.Distance(reverseY, halfY), m_LegLayerMask));
-            m_TempHits.Add(Physics2D.Raycast(halfX, reverseX - halfX, Vector3.Distance(reverseX, halfX), m_LegLayerMask));          
-
-            foreach (var hit in m_TempHits)
-            {
-                if (!hit || hit.fraction == 0f)
-                {
-                    continue;
-                }
-
-                float distance = Vector3.Distance(hit.point, origin);
-
-                if (distance < closest)
-                {
-                    closest = distance;
-                    m_BestHit = hit;
-                    hitFound = true;
-                }
-            }
-        }
-
-        m_TempHits.Clear();
 
         return hitFound;
     }

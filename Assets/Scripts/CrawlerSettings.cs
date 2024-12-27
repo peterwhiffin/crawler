@@ -14,4 +14,9 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float WallSuspensionDistance { get; private set; }
     [field: SerializeField] public float WallSuspensionSpringStrength { get; private set; }
     [field: SerializeField] public float WallSuspensionDamperStrength { get; private set; }
+    [field: SerializeField] public float MaxLegDistance { get; private set; }
+    [field: SerializeField] public AnimationCurve StepCurve { get; private set; }
+    [field: SerializeField] public float StepHeight { get; private set; }
+    [field: SerializeField] public float RopeOffset { get; private set; }
+    [field: SerializeField] public float MaxLegTime { get; private set; }
 }
