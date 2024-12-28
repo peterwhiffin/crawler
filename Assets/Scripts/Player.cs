@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     private List<RaycastHit2D> m_TempHits = new();
+    private List<Leg> m_AvailableLegs = new();
     private RaycastHit2D m_BestHit;
     private Vector2 m_MoveInput = Vector2.zero;
     private Vector2 m_LookInput = Vector2.zero;
@@ -14,8 +15,6 @@ public class Player : MonoBehaviour
     private bool m_IsLaunching = false;
     private float m_LaunchTime = 0f;
     private bool m_HitWhileLaunching = false;
-    //private float m_MouseAccumulation = 0f;
-
 
     [SerializeField] private Transform m_Crosshair;
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
@@ -32,6 +31,7 @@ public class Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
         Physics2D.queriesStartInColliders = false;
+
         foreach(Leg leg in m_Legs)
         {
             leg.Initialize(m_CrawlerSettings.LegMoveRate);
@@ -87,8 +87,7 @@ public class Player : MonoBehaviour
                     {
                         counter++;
                         leg.PlayerLanded();
-                        leg.SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
-                        leg.StartMove();
+                        leg.NewTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
                     }
                 }
 
@@ -148,9 +147,6 @@ public class Player : MonoBehaviour
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
         if (m_FreezeLegsInput && m_MoveInput == Vector2.zero && Vector2.Distance(mouseWorldPosition, (Vector2)transform.position) > m_CrawlerSettings.CrosshairLookThreshold)
         {
-            
-
-            
             Vector2 direction = (mouseWorldPosition - (Vector2)transform.position).normalized;
             force = direction * m_CrawlerSettings.MoveSpeed;
         }
@@ -247,8 +243,7 @@ public class Player : MonoBehaviour
                 if (GetLegHits(leg.Orientation))
                 {
                     leg.PlayerLanded();
-                    leg.SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
-                    leg.StartMove();
+                    leg.NewTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
                 }
             }
         }
@@ -296,8 +291,7 @@ public class Player : MonoBehaviour
         }
 
         
-        m_Legs[m_LegIndex].SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
-        m_Legs[m_LegIndex].StartMove();
+        m_Legs[m_LegIndex].NewTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
         return;
     }
 
@@ -319,114 +313,14 @@ public class Player : MonoBehaviour
         m_RestPosition.position = restPosition;       
     }
 
-    private bool GetLegHits(Vector2 orientation)
-    {       
-             
-        float maxDistance = m_CrawlerSettings.LegReach;
-        Vector3 origin = transform.position;
-        Vector3 forward = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right);
-        Vector3 up = origin + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
-        Vector3 max = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right) + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
-        Vector3 halfY = origin + (m_CrawlerSettings.LegReach / 2f * orientation.y * transform.up);
-        Vector3 halfX = origin + (m_CrawlerSettings.LegReach / 2f * orientation.x * transform.right);
-        Vector3 reverseY = origin + (m_CrawlerSettings.LegReach * -orientation.y * transform.up);
-        Vector3 reverseX = origin + (m_CrawlerSettings.LegReach * -orientation.x * transform.right);
-        RaycastHit2D originToMax = Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_LegLayerMask);
-        RaycastHit2D forwardToMax = Physics2D.Raycast(forward, max - forward, Vector3.Distance(forward, max), m_LegLayerMask);
-        RaycastHit2D upToMax = Physics2D.Raycast(up, max - up, Vector3.Distance(up, max), m_LegLayerMask);
-        RaycastHit2D originToForward = Physics2D.Raycast(origin, forward - origin, Vector3.Distance(origin, forward), m_LegLayerMask);
-        RaycastHit2D originToUp = Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_LegLayerMask);
-        m_TempHits.Clear();
-
-        if (!forwardToMax)
-        {
-            m_TempHits.Add(Physics2D.Raycast(max, forward - max, Vector3.Distance(max, forward), m_LegLayerMask));
-        }
-
-        if (!upToMax)
-        {
-            m_TempHits.Add(Physics2D.Raycast(max, up - max, Vector3.Distance(max, up), m_LegLayerMask));
-        }
-        
-        
-        if (FindFarthestHit())
-            return true;
-
-        m_TempHits.Clear();
-
-        if (!originToForward)
-        {
-            m_TempHits.Add(forwardToMax);
-        }
-
-        if (!originToUp)
-        {
-            m_TempHits.Add(upToMax);
-        }
-
-        if(FindFarthestHit()) 
-            return true;
-
-        m_TempHits.Clear();
-        if (!originToMax)
-        {
-            m_TempHits.Add(Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_LegLayerMask));
-        }
-
-        if(FindFarthestHit()) 
-            return true;
-
-        m_TempHits.Clear();
-        m_TempHits.Add(originToMax);
-
-        if(FindFarthestHit())
-            return true;
-
-        m_TempHits.Clear();
-        m_TempHits.Add(Physics2D.Raycast(halfX, reverseY - halfX, Vector3.Distance(halfX, reverseY), m_LegLayerMask));
-        m_TempHits.Add(Physics2D.Raycast(halfY, reverseX - halfY, Vector3.Distance(halfY, reverseX), m_LegLayerMask)); 
-
-        return FindFarthestHit();
-    }
-
-    private bool FindFarthestHit()
-    {
-        bool hitFound = false;
-        float farthestHit = -1f;
-
-        foreach (var hit in m_TempHits)
-        {
-            if (!hit)
-            {
-                continue;
-            }
-
-            float distance = Vector3.Distance(hit.point, transform.position);
-
-            if (distance > farthestHit)
-            {
-                farthestHit = distance;
-                m_BestHit = hit;
-                hitFound = true;
-            }
-        }
-
-        return hitFound;
-    }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (m_IsLaunching)
         {
-            Debug.Log("Hit while launching 1");
-
             if (m_RigidBody.linearVelocity.magnitude < m_CrawlerSettings.LaunchHitVelocityThreshold)
             {
                 m_HitWhileLaunching = true;
-                Debug.Log("Hit while launching 2: " + m_RigidBody.linearVelocity.magnitude);
             }
         }
     }
-
-    
 }

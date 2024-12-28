@@ -29,4 +29,5 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float LookRotationThreshold { get; private set; }
     [field: SerializeField] public float SlingShotMouseThreshold { get; private set; }
     [field: SerializeField] public float CrosshairLookThreshold { get; private set; }
+    [field: SerializeField] public LayerMask LegHitMask { get; private set; }
 }

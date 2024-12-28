@@ -7,9 +7,12 @@ using UnityEngine.Splines;
 public class Leg : MonoBehaviour
 {
     private float m_TimeElapsed;    
-    private bool m_DoMove;
-    private bool m_FollowCursor = false;
+    //private bool m_DoMove;
+    private bool m_IsLaunching = false;
     private bool m_NeedNewPosition = false;
+    private bool m_IsDoneMoving = false;
+    private List<RaycastHit2D> m_TempHits = new();
+    private RaycastHit2D m_BestHit;
 
     [SerializeField] private Player m_Player;
     [SerializeField] private Transform m_TargetPosition;
@@ -26,49 +29,48 @@ public class Leg : MonoBehaviour
     public void Initialize(float moveRate)
     {
         m_TimeElapsed = 0f;
-        m_DoMove = true;
+        m_IsDoneMoving = false;
     }
 
     private void Update()
     {
-        if (m_FollowCursor)
-        {
-            return;
-        }
-
-
-        if (m_TimeElapsed >= m_CrawlerSettings.LegMoveRate)
-        {
-            m_DoMove = false;
-        }
-
-        if (m_DoMove)
-        {
-            if (m_NeedNewPosition)
-            {
-                m_NeedNewPosition = false;
-                FreezeConstraints();
-            }
-
-            float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
-            Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
-            transform.position = Vector3.Lerp(transform.position, target, time);
-            m_TimeElapsed += Time.deltaTime;
-        }
-        else
-        {
-            if(!m_NeedNewPosition)
-                transform.position = m_TargetPosition.position;
-        }
-               
+        MoveTowardTarget();
     }
 
     private void FixedUpdate()
     {
-        if (m_FollowCursor)
+        if (!m_IsLaunching)
         {
-            m_RigidBody.AddForce(FollowCursor());
+            return;
         }
+
+        m_RigidBody.AddForce(GetSpringForce());
+    }
+
+    private void LateUpdate()
+    {
+        DisplayRope();
+    }
+
+    private void MoveTowardTarget()
+    {
+        if (m_IsLaunching || m_IsDoneMoving)
+        {
+            return;
+        }
+
+        m_IsDoneMoving = m_TimeElapsed >= m_CrawlerSettings.LegMoveRate;
+
+        if (m_NeedNewPosition)
+        {
+            m_NeedNewPosition = false;
+            FreezeConstraints();
+        }
+
+        float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
+        Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
+        transform.position = Vector3.Lerp(transform.position, target, time);
+        m_TimeElapsed += Time.deltaTime;
     }
 
     private void FreezeConstraints()
@@ -77,7 +79,7 @@ public class Leg : MonoBehaviour
         m_RigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
     }
 
-    private Vector2 FollowCursor()
+    private Vector2 GetSpringForce()
     {
         Vector2 direction = m_RigidBody.position - (Vector2)m_Player.transform.position;
         float offset = m_CrawlerSettings.LegReach - direction.magnitude;
@@ -88,50 +90,38 @@ public class Leg : MonoBehaviour
 
     public void PlayerLaunched()
     {
-        m_FollowCursor = true;
+        m_IsLaunching = true;
         m_RigidBody.bodyType = RigidbodyType2D.Dynamic;
         m_RigidBody.constraints = RigidbodyConstraints2D.None;
         m_NeedNewPosition = true;
-        m_DoMove = false;
+        m_IsDoneMoving = true;
         m_TimeElapsed = 0f;
     }
 
     public void PlayerLanded()
-    {
-        
-        m_FollowCursor = false;
+    {      
+        m_IsLaunching = false;
     }
 
-    public void SetTarget(Transform parent, Vector2 targetPosition, Vector2 targetNormal)
+    public void NewTarget()
     {
         m_TargetPosition.SetParent(null);
-        m_TargetPosition.up = targetNormal;
-        m_TargetPosition.SetParent(parent);
-        m_TargetPosition.position = targetPosition;
-        
-        transform.up = targetNormal;
-    }
-
-    public void StartMove()
-    {
-        
+        m_TargetPosition.up = m_BestHit.normal;
+        m_TargetPosition.SetParent(m_BestHit.transform);
+        m_TargetPosition.position = m_BestHit.point;      
+        transform.up = m_BestHit.normal;
         m_TimeElapsed = 0f;
-        m_DoMove = true;
+        m_IsDoneMoving = false;
     }
 
     public bool IsDoneMoving()
     {
-        return !m_DoMove || m_NeedNewPosition;
+        return m_IsDoneMoving || m_NeedNewPosition;
     }
 
     public void SnapPosition(Vector3 position)
     {
         transform.position = position;
-    }
-
-    private void LateUpdate()
-    {
-        DisplayRope();
     }
 
     private void DisplayRope()
@@ -145,4 +135,108 @@ public class Leg : MonoBehaviour
         m_LineRenderer.positionCount = 2;
         m_LineRenderer.SetPositions(pos);
     }
+
+    private bool FindBestHit()
+    {
+        Vector3 origin = transform.position;
+        Vector3 forward = origin + (m_CrawlerSettings.LegReach * m_Orientation.x * transform.right);
+        Vector3 up = origin + (m_CrawlerSettings.LegReach * m_Orientation.y * transform.up);
+        Vector3 max = origin + (m_CrawlerSettings.LegReach * m_Orientation.x * transform.right) + (m_CrawlerSettings.LegReach * m_Orientation.y * transform.up);
+        Vector3 halfY = origin + (m_CrawlerSettings.LegReach / 2f * m_Orientation.y * transform.up);
+        Vector3 halfX = origin + (m_CrawlerSettings.LegReach / 2f * m_Orientation.x * transform.right);
+        Vector3 reverseY = origin + (m_CrawlerSettings.LegReach * -m_Orientation.y * transform.up);
+        Vector3 reverseX = origin + (m_CrawlerSettings.LegReach * -m_Orientation.x * transform.right);
+
+        RaycastHit2D originToMax = Physics2D.Raycast(origin, max - origin, Vector3.Distance(origin, max), m_CrawlerSettings.LegHitMask);
+        RaycastHit2D forwardToMax = Physics2D.Raycast(forward, max - forward, Vector3.Distance(forward, max), m_CrawlerSettings.LegHitMask);
+        RaycastHit2D upToMax = Physics2D.Raycast(up, max - up, Vector3.Distance(up, max), m_CrawlerSettings.LegHitMask);
+        RaycastHit2D originToForward = Physics2D.Raycast(origin, forward - origin, Vector3.Distance(origin, forward), m_CrawlerSettings.LegHitMask);
+        RaycastHit2D originToUp = Physics2D.Raycast(origin, up - origin, Vector3.Distance(up, origin), m_CrawlerSettings.LegHitMask);
+
+        m_TempHits.Clear();
+
+        if (!forwardToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, forward - max, Vector3.Distance(max, forward), m_CrawlerSettings.LegHitMask));
+        }
+
+        if (!upToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, up - max, Vector3.Distance(max, up), m_CrawlerSettings.LegHitMask));
+        }
+
+
+        if (FindFarthestHit())
+            return true;
+
+        m_TempHits.Clear();
+
+        if (!originToForward)
+        {
+            m_TempHits.Add(forwardToMax);
+        }
+
+        if (!originToUp)
+        {
+            m_TempHits.Add(upToMax);
+        }
+
+        if (FindFarthestHit())
+            return true;
+
+        m_TempHits.Clear();
+        if (!originToMax)
+        {
+            m_TempHits.Add(Physics2D.Raycast(max, origin - max, Vector3.Distance(max, origin), m_CrawlerSettings.LegHitMask));
+        }
+
+        if (FindFarthestHit())
+            return true;
+
+        m_TempHits.Clear();
+        m_TempHits.Add(originToMax);
+
+        if (FindFarthestHit())
+            return true;
+
+        m_TempHits.Clear();
+        m_TempHits.Add(Physics2D.Raycast(halfX, reverseY - halfX, Vector3.Distance(halfX, reverseY), m_CrawlerSettings.LegHitMask));
+        m_TempHits.Add(Physics2D.Raycast(halfY, reverseX - halfY, Vector3.Distance(halfY, reverseX), m_CrawlerSettings.LegHitMask));
+
+        return FindFarthestHit();
+    }
+
+    private bool FindFarthestHit()
+    {
+        bool hitFound = false;
+        float farthestHit = -1f;
+
+        foreach (var hit in m_TempHits)
+        {
+            if (!hit)
+            {
+                continue;
+            }
+
+            float distance = Vector3.Distance(hit.point, transform.position);
+
+            if (distance > farthestHit)
+            {
+                farthestHit = distance;
+                m_BestHit = hit;
+                hitFound = true;
+            }
+        }
+
+        return hitFound;
+    }
+
+    public void LaunchDone()
+    {
+        if (FindBestHit())
+        {
+            NewTarget();
+        }
+    }
 }
+
