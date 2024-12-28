@@ -25,4 +25,8 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float LegLaunchSpringStrength { get; private set; }
     [field: SerializeField] public float LegLaunchDamperStrength { get; private set; }
     [field: SerializeField] public float LaunchHitVelocityThreshold { get; private set; }
+    [field: SerializeField] public float LegAngularDampStrength { get; private set; }
+    [field: SerializeField] public float LookRotationThreshold { get; private set; }
+    [field: SerializeField] public float SlingShotMouseThreshold { get; private set; }
+    [field: SerializeField] public float CrosshairLookThreshold { get; private set; }
 }

@@ -266,7 +266,7 @@
                 {
                     "name": "",
                     "id": "acb5629f-394e-4e03-95d1-a119ac1b136d",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",

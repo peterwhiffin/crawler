@@ -41,5 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Player
+    uniqueID: 3269876533
+    locked: 0
+  - name: Terrain
+    uniqueID: 3889093663
+    locked: 0
+  - name: Crosshair
+    uniqueID: 3617958401
+    locked: 0
   m_RenderingLayers:
   - Default

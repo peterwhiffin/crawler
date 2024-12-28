@@ -8,6 +8,8 @@ public class HotBar : MonoBehaviour
 
     [SerializeField] private Equipment m_SelectedEquipment;
 
+    public bool IsAttacking { get {  return m_PrimaryAttackInput; } }
+
     public void PrimaryAttackInput(InputAction.CallbackContext context)
     {
         if (context.started)

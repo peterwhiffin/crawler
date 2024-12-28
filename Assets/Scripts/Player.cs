@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     private bool m_IsLaunching = false;
     private float m_LaunchTime = 0f;
     private bool m_HitWhileLaunching = false;
+    //private float m_MouseAccumulation = 0f;
+
 
     [SerializeField] private Transform m_Crosshair;
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] private List<Leg> m_Legs = new();  
     [SerializeField] private LayerMask m_LegLayerMask;
     [SerializeField] private Transform m_PlayerGraphic;
+    [SerializeField] private HotBar m_Hotbar;
     public CrawlerSettings CrawlerSettings { get { return m_CrawlerSettings; } }
 
     private void Start()
@@ -52,6 +55,7 @@ public class Player : MonoBehaviour
         if (context.started)
         {
             m_FreezeLegsInput = true;
+            
         }
         
         if (context.canceled)
@@ -134,16 +138,51 @@ public class Player : MonoBehaviour
             if (m_IsLaunching)
                 return;
 
-            m_RigidBody.AddForce((m_CrawlerSettings.MoveSpeed * m_MoveInput.normalized) + RestrainToRestPosition() + FloatOffTerrain());
+            m_RigidBody.AddForce(GetMoveForce() + RestrainToRestPosition() + FloatOffTerrain());
         }
     }
 
+    private Vector2 GetMoveForce()
+    {
+        Vector2 force = Vector2.zero;
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
+        if (m_FreezeLegsInput && m_MoveInput == Vector2.zero && Vector2.Distance(mouseWorldPosition, (Vector2)transform.position) > m_CrawlerSettings.CrosshairLookThreshold)
+        {
+            
+
+            
+            Vector2 direction = (mouseWorldPosition - (Vector2)transform.position).normalized;
+            force = direction * m_CrawlerSettings.MoveSpeed;
+        }
+        else
+        {
+            force = m_CrawlerSettings.MoveSpeed * m_MoveInput.normalized;
+        }
+
+        return force;
+    }
+
+
     private void LookAtCursor()
     {
-        var lookTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
+        Vector2 lookTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
 
-        m_PlayerGraphic.up = lookTarget - transform.position;
-        m_Crosshair.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f);
+
+        if (m_FreezeLegsInput && m_MoveInput == Vector2.zero && !m_Hotbar.IsAttacking)
+        {
+            Vector2 direction = ((Vector2)m_RestPosition.position - (Vector2)transform.position).normalized;
+            Vector2 lookTarget2 = direction * 2f;
+
+            m_PlayerGraphic.up = lookTarget2;
+        }
+        else
+        {
+
+            if(Vector2.Distance(lookTarget, (Vector2)transform.position) > m_CrawlerSettings.CrosshairLookThreshold)
+                m_PlayerGraphic.up = lookTarget - (Vector2)transform.position;            
+        }
+
+        m_Crosshair.position = lookTarget;
     }
 
     private Vector2 RestrainToRestPosition()
