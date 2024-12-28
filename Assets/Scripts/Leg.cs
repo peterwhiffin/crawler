@@ -8,16 +8,20 @@ public class Leg : MonoBehaviour
 {
     private float m_TimeElapsed;    
     private bool m_DoMove;
+    private bool m_FollowCursor = false;
+    private bool m_NeedNewPosition = false;
 
     [SerializeField] private Player m_Player;
     [SerializeField] private Transform m_TargetPosition;
     [SerializeField] private Vector2 m_Orientation;
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
     [SerializeField] private LineRenderer m_LineRenderer;
+    [SerializeField] private Rigidbody2D m_RigidBody;
 
     private List<Vector3> allRopeSections = new();
     public Vector2 Orientation { get { return m_Orientation; } }
     public Vector2 TargetPosition { get { return m_TargetPosition.position; } }
+    public bool NeedsNewPosition { get { return m_NeedNewPosition; } }
 
     public void Initialize(float moveRate)
     {
@@ -27,6 +31,12 @@ public class Leg : MonoBehaviour
 
     private void Update()
     {
+        if (m_FollowCursor)
+        {
+            return;
+        }
+
+
         if (m_TimeElapsed >= m_CrawlerSettings.LegMoveRate)
         {
             m_DoMove = false;
@@ -34,7 +44,12 @@ public class Leg : MonoBehaviour
 
         if (m_DoMove)
         {
-            
+            if (m_NeedNewPosition)
+            {
+                m_NeedNewPosition = false;
+                FreezeConstraints();
+            }
+
             float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
             Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
             transform.position = Vector3.Lerp(transform.position, target, time);
@@ -42,9 +57,49 @@ public class Leg : MonoBehaviour
         }
         else
         {
-            transform.position = m_TargetPosition.position;
+            if(!m_NeedNewPosition)
+                transform.position = m_TargetPosition.position;
         }
                
+    }
+
+    private void FixedUpdate()
+    {
+        if (m_FollowCursor)
+        {
+            m_RigidBody.AddForce(FollowCursor());
+        }
+    }
+
+    private void FreezeConstraints()
+    {
+        m_RigidBody.bodyType = RigidbodyType2D.Kinematic;
+        m_RigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    private Vector2 FollowCursor()
+    {
+        Vector2 direction = m_RigidBody.position - (Vector2)m_Player.transform.position;
+        float offset = m_CrawlerSettings.LegReach - direction.magnitude;
+        float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
+        float force = (offset * m_CrawlerSettings.LegLaunchSpringStrength) - (velocity * m_CrawlerSettings.LegLaunchDamperStrength);
+        return direction.normalized * force;
+    }
+
+    public void PlayerLaunched()
+    {
+        m_FollowCursor = true;
+        m_RigidBody.bodyType = RigidbodyType2D.Dynamic;
+        m_RigidBody.constraints = RigidbodyConstraints2D.None;
+        m_NeedNewPosition = true;
+        m_DoMove = false;
+        m_TimeElapsed = 0f;
+    }
+
+    public void PlayerLanded()
+    {
+        
+        m_FollowCursor = false;
     }
 
     public void SetTarget(Transform parent, Vector2 targetPosition, Vector2 targetNormal)
@@ -58,14 +113,15 @@ public class Leg : MonoBehaviour
     }
 
     public void StartMove()
-    {       
+    {
+        
         m_TimeElapsed = 0f;
         m_DoMove = true;
     }
 
     public bool IsDoneMoving()
     {
-        return !m_DoMove;
+        return !m_DoMove || m_NeedNewPosition;
     }
 
     public void SnapPosition(Vector3 position)

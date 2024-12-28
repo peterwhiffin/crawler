@@ -27,7 +27,16 @@
                     "name": "Fire",
                     "type": "Button",
                     "id": "a6a7648b-552d-4ec1-8027-6279447be576",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "FreezeLegs",
+                    "type": "Button",
+                    "id": "d086e337-74d0-44d2-b54f-8ff2132fdc48",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -251,6 +260,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "acb5629f-394e-4e03-95d1-a119ac1b136d",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "FreezeLegs",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

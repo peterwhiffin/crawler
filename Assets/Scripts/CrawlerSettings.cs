@@ -19,4 +19,10 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float StepHeight { get; private set; }
     [field: SerializeField] public float RopeOffset { get; private set; }
     [field: SerializeField] public float MaxLegTime { get; private set; }
+    [field: SerializeField] public float LaunchForce { get; private set; }
+    [field: SerializeField] public float LaunchTime { get; private set; }
+    [field: SerializeField] public float LaunchThreshold { get; private set; }
+    [field: SerializeField] public float LegLaunchSpringStrength { get; private set; }
+    [field: SerializeField] public float LegLaunchDamperStrength { get; private set; }
+    [field: SerializeField] public float LaunchHitVelocityThreshold { get; private set; }
 }
