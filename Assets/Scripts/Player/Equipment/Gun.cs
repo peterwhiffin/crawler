@@ -8,6 +8,7 @@ public class Gun : Equipment
     [SerializeField] private float m_FireRate;
     [SerializeField] private Projectile m_ProjectilePrefab;
     [SerializeField] private Transform m_FirePosition;
+    public override Transform FirePosition { get { return m_FirePosition; } }
 
     private void Start()
     {

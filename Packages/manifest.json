@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.ai.navigation": "2.0.5",
     "com.unity.asset-manager-for-unity": "1.2.4",
     "com.unity.cinemachine": "3.1.2",
     "com.unity.feature.2d": "2.0.1",

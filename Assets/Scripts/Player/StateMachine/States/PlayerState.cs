@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerState
+public class PlayerState : State
 {
     protected StateMachine m_StateMachine;
     protected Player m_Player;
@@ -11,11 +11,5 @@ public class PlayerState
         m_StateMachine = stateMachine;
         m_Player = player;
         m_InputHandler = inputHandler;
-    }
-
-    public virtual void Enter() { }
-    public virtual void Exit() { }
-    public virtual void Update() { }
-    public virtual void FixedUpdate() { }
-    public virtual void LateUpdate() { }    
+    }  
 }
