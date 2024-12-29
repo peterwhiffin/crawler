@@ -32,7 +32,12 @@ public class PlayerStretchState : PlayerGroundedState
 
         m_Player.Motor.SetRestPosition();
         
-        if(m_InputHandler.MoveInput != Vector2.zero || m_Player.Hotbar.IsAttacking)
+        if(m_InputHandler.MoveInput != Vector2.zero)
+        {         
+            m_Player.Motor.CheckCurrentLeg();
+        }      
+
+        if (m_Player.Hotbar.IsAttacking || m_InputHandler.MoveInput != Vector2.zero)
         {
             m_Player.LookAtCursor();
         }
@@ -65,7 +70,7 @@ public class PlayerStretchState : PlayerGroundedState
         Vector2 finalForce = Vector2.zero;
         ForceMode2D forceMode = ForceMode2D.Impulse;
 
-        if (m_IsLaunchQueued)
+        if (m_IsLaunchQueued && !m_HasLaunched)
         {
             finalForce += m_Player.Motor.GetLaunchForce();
             m_Player.Motor.LaunchPlayer();
@@ -77,14 +82,17 @@ public class PlayerStretchState : PlayerGroundedState
             {
                 finalForce += m_Player.Motor.GetMoveForce(m_InputHandler.MoveInput);
             }
-            else if (!m_Player.Motor.IsMouseInDeadZone())
+            else 
             {
-                finalForce += m_Player.Motor.GetStretchMoveForce();
-            }
+                if (!m_Player.Motor.IsMouseInDeadZone())
+                {
+                    finalForce += m_Player.Motor.GetStretchMoveForce();
+                }
 
-            if (m_Player.Motor.IsPlayerAtMaxDistance())
-            {
-                finalForce += m_Player.Motor.RestrainToRestPosition();
+                if (m_Player.Motor.IsPlayerAtMaxDistance())
+                {
+                    finalForce += m_Player.Motor.RestrainToRestPosition();
+                }
             }
 
             forceMode = ForceMode2D.Force;

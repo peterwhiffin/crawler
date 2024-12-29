@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <MoveSpeed>k__BackingField: 50.5
   <MinimumLegMoveDistance>k__BackingField: 0.46
-  <LegMoveRate>k__BackingField: 0.09
-  <LegMoveThreshold>k__BackingField: 0.35
+  <LegMoveRate>k__BackingField: 0.14
+  <LegMoveThreshold>k__BackingField: 0.56
   <LegReach>k__BackingField: 1.39
   <SpringForce>k__BackingField: 163.9
-  <DampForce>k__BackingField: 4.8
-  <MaxSpringStretch>k__BackingField: 1.24
+  <DampForce>k__BackingField: 0.5
+  <MaxSpringStretch>k__BackingField: 0.91
   <WallSuspensionDistance>k__BackingField: 1.01
   <WallSuspensionSpringStrength>k__BackingField: 156.2
   <WallSuspensionDamperStrength>k__BackingField: 1
-  <MaxLegDistance>k__BackingField: 1.8
+  <MaxLegDistance>k__BackingField: 2.14
   <StepCurve>k__BackingField:
     serializedVersion: 2
     m_Curve:
@@ -69,14 +69,16 @@ MonoBehaviour:
   <StepHeight>k__BackingField: 0.74
   <RopeOffset>k__BackingField: 0
   <MaxLegTime>k__BackingField: 0.11
-  <LaunchForce>k__BackingField: 34.4
+  <LaunchForce>k__BackingField: 21.6
   <LaunchTime>k__BackingField: 0.35
   <LaunchThreshold>k__BackingField: 0.39
-  <LegLaunchSpringStrength>k__BackingField: 82.9
+  <LegLaunchSpringStrength>k__BackingField: 121.1
   <LegLaunchDamperStrength>k__BackingField: 1.34
-  <LaunchHitVelocityThreshold>k__BackingField: 13.2
+  <LaunchHitVelocityThreshold>k__BackingField: 9.89
   <LegAngularDampStrength>k__BackingField: 0
   <LookRotationThreshold>k__BackingField: 0
   <SlingShotMouseThreshold>k__BackingField: 20
   <CrosshairLookThreshold>k__BackingField: 0.33
   <CollisionResetTime>k__BackingField: 2.02
+  <MaxCollisionAngle>k__BackingField: 2.3
+  <LegSearchMultiplier>k__BackingField: 0.91

@@ -20,12 +20,17 @@ public class PlayerIdleState : PlayerGroundedState
     {
         base.Update();
 
-        
+
 
         if (m_Player.Motor.LegNeedsToMove())
         {
             m_Player.Motor.CheckCurrentLeg();
         }
+        else if (m_Player.Motor.HasPlayerHitMoveThreshold())
+        {
+            m_Player.Motor.CheckCurrentLeg();
+        }
+        
 
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();

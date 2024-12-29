@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     [field: SerializeField] public HotBar Hotbar { get; private set; }
     [field: SerializeField] public PlayerMotor Motor { get; private set; }
     public CrawlerSettings CrawlerSettings { get { return m_CrawlerSettings; } }
-
+    public InputHandler PlayerInput { get { return m_InputHandler; } }
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;

@@ -30,4 +30,6 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float SlingShotMouseThreshold { get; private set; }
     [field: SerializeField] public float CrosshairLookThreshold { get; private set; }
     [field: SerializeField] public float CollisionResetTime { get; private set; }
+    [field: SerializeField] public float MaxCollisionAngle { get; private set; }
+    [field: SerializeField] public float LegSearchMultiplier { get; private set; }
 }

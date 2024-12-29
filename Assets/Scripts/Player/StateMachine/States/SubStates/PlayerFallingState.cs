@@ -27,9 +27,21 @@ public class PlayerFallingState : PlayerInAirState
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
 
-        if (Time.time - m_TimeEntered > m_Player.Motor.GetLaunchTime() && m_Player.Motor.IsPlayersVelocityBelowLandingThreshold())
-        {
+        //if (Time.time - m_TimeEntered > m_Player.Motor.GetLaunchTime() && m_Player.Motor.IsPlayersVelocityBelowLandingThreshold())
+        //{
 
+        //    m_Player.Motor.CheckLegsWithoutPosition();
+        //    m_Player.Motor.CheckCurrentLeg();
+
+        //    if (m_Player.Motor.EnoughLegsToWalk())
+        //    {
+        //        m_StateMachine.ChangeState(m_Player.IdleState);
+        //    }
+
+        //}
+
+        if (m_Player.Motor.CanPlayerLand(m_TimeEntered))
+        {
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
 

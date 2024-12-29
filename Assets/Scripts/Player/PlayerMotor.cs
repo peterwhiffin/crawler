@@ -7,15 +7,26 @@ public class PlayerMotor : MonoBehaviour
     private List<Leg> m_LegsWithoutPosition = new();
     private List<Leg> m_TempLegs = new();
     private List<RaycastHit2D> m_TempHits = new();
+    private ContactPoint2D[] m_Contacts;
     private RaycastHit2D m_BestHit;
-    private int m_LegIndex;
-    private bool m_HitWallAtSpeed;
-
+    private Vector3 m_LastRestPosition;
+    
+    private int m_LegIndex;   
+    
+    private bool m_ShouldStopFlying;
+    
+    [SerializeField] private Player m_Player;
     [SerializeField] private List<Leg> m_Legs = new();    
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
     [SerializeField] private Rigidbody2D m_RigidBody;     
     [SerializeField] private Transform m_RestPosition;
     [SerializeField] private LayerMask m_LegLayerMask;
+    [SerializeField] private int m_MaxContacts;
+
+    private void Awake()
+    {
+        m_Contacts = new ContactPoint2D[m_MaxContacts];
+    }
 
     public void Initialize()
     {
@@ -65,31 +76,31 @@ public class PlayerMotor : MonoBehaviour
         return Vector2.Distance(mouseWorldPosition, (Vector2)transform.position) < m_CrawlerSettings.CrosshairLookThreshold;
     }
 
-    public Vector2 GetMoveForce(Vector2 moveInput)
-    {
-        return  m_CrawlerSettings.MoveSpeed * moveInput.normalized;
-    }
-
     public void PlayerInAir()
     {
-        m_HitWallAtSpeed = false;
+        m_ShouldStopFlying = false;
     }
 
-    public float GetLaunchTime()
+    public bool CanPlayerLand(float timeStartedFalling)
     {
-        float time = m_CrawlerSettings.LaunchTime;
+        bool canLand = false;
 
-        if(m_HitWallAtSpeed)
+        if(m_ShouldStopFlying || m_RigidBody.linearVelocity.magnitude < m_CrawlerSettings.LaunchHitVelocityThreshold)
         {
-            time += m_CrawlerSettings.CollisionResetTime;
+            canLand = true;
         }
 
-        return time;
+        return canLand;
     }
 
     public bool IsPlayersVelocityBelowLandingThreshold()
     {
         return m_RigidBody.linearVelocity.magnitude < m_CrawlerSettings.LaunchHitVelocityThreshold;
+    }
+
+    public Vector2 GetMoveForce(Vector2 moveInput)
+    {
+        return m_CrawlerSettings.MoveSpeed * moveInput.normalized;
     }
 
     public Vector2 GetStretchMoveForce()
@@ -101,10 +112,11 @@ public class PlayerMotor : MonoBehaviour
 
     public Vector2 RestrainToRestPosition()
     {
+        float restPositionVelocity = (m_RestPosition.position - m_LastRestPosition).magnitude;
         Vector2 direction = m_RestPosition.position - transform.position;
         float distance = direction.magnitude;
         float velocity = Vector2.Dot(direction.normalized, m_RigidBody.linearVelocity);
-        float spring = distance > m_CrawlerSettings.MaxSpringStretch ? m_CrawlerSettings.MoveSpeed / distance : m_CrawlerSettings.SpringForce;
+        float spring = distance > m_CrawlerSettings.MaxSpringStretch ? (m_CrawlerSettings.MoveSpeed / distance) + (Mathf.Clamp(distance - m_CrawlerSettings.MaxSpringStretch - .3f, 0, 10f) * (m_CrawlerSettings.MoveSpeed / distance))  : m_CrawlerSettings.SpringForce;
         return direction.normalized * ((distance * spring) - (velocity * m_CrawlerSettings.DampForce));
     }
     public Vector2 FloatOffTerrain()
@@ -139,7 +151,9 @@ public class PlayerMotor : MonoBehaviour
     }
     public void SetRestPosition()
     {
+        m_LastRestPosition = m_RestPosition.position;
         Vector2 restPosition = transform.position;
+        restPosition = Vector2.zero;
         int counter = 0;
 
         foreach (Leg leg in m_Legs)
@@ -147,11 +161,21 @@ public class PlayerMotor : MonoBehaviour
             if (!m_LegsWithoutPosition.Contains(leg))
             {
                 counter++;
-                restPosition += leg.TargetPosition;
+                restPosition += (Vector2)leg.transform.position;
             }
         }
 
-        restPosition /= counter + 1;
+        //restPosition /= counter + 1;
+        if (counter > 0)
+        {
+            restPosition /= counter;
+        }
+        else
+        {
+            restPosition = transform.position;
+        }
+
+
         m_RestPosition.position = restPosition;
     }
 
@@ -200,12 +224,15 @@ public class PlayerMotor : MonoBehaviour
         return m_LegsWithoutPosition.Count < 3;
     }
 
+    public bool HasPlayerHitMoveThreshold()
+    {
+        return Vector3.Distance(transform.position, m_RestPosition.position) >= m_CrawlerSettings.LegMoveThreshold;
+    }
+
     public void CheckCurrentLeg()
     {
-        if (Vector3.Distance(transform.position, m_RestPosition.position) < m_CrawlerSettings.LegMoveThreshold ||
-            !m_Legs[m_LegIndex].IsDoneMoving())
-        {
-     
+        if (!m_Legs[m_LegIndex].IsDoneMoving())
+        {    
             return;
         }
 
@@ -223,6 +250,10 @@ public class PlayerMotor : MonoBehaviour
             return;
         }
 
+
+        
+
+
         m_Legs[m_LegIndex].SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
         return;
     }
@@ -234,9 +265,14 @@ public class PlayerMotor : MonoBehaviour
 
     private bool GetLegHits(Vector2 orientation)
     {
-
-        float maxDistance = m_CrawlerSettings.LegReach;
         Vector3 origin = transform.position;
+        Vector3 offsetOrigin = transform.position + ((transform.right * m_Player.PlayerInput.MoveInput.x) + (transform.up * m_Player.PlayerInput.MoveInput.y)) * m_CrawlerSettings.LegSearchMultiplier;
+
+        if (!Physics2D.Raycast(transform.position, offsetOrigin - transform.position, Vector3.Distance(offsetOrigin, transform.position), m_LegLayerMask))
+        {
+            origin = offsetOrigin; 
+        }
+        
         Vector3 forward = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right);
         Vector3 up = origin + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
         Vector3 max = origin + (m_CrawlerSettings.LegReach * orientation.x * transform.right) + (m_CrawlerSettings.LegReach * orientation.y * transform.up);
@@ -329,9 +365,14 @@ public class PlayerMotor : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (m_RigidBody.linearVelocity.magnitude > m_CrawlerSettings.LaunchHitVelocityThreshold)
+        collision.GetContacts(m_Contacts);
+
+        foreach (var contact in m_Contacts)
         {
-            m_HitWallAtSpeed = true;
+            if(Vector2.Angle(m_RigidBody.linearVelocity, contact.normal) > m_CrawlerSettings.MaxCollisionAngle)
+            {
+                m_ShouldStopFlying = true;
+            }
         }
     }
 }

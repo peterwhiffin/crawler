@@ -9,6 +9,8 @@ public class Leg : MonoBehaviour
     private float m_TimeElapsed;    
     private bool m_IsFalling = false;
     private bool m_NeedNewPosition = false;
+    
+    private Vector3[] m_RopePositions;
 
     [SerializeField] private Player m_Player;
     [SerializeField] private Transform m_TargetPosition;
@@ -16,11 +18,17 @@ public class Leg : MonoBehaviour
     [SerializeField] private CrawlerSettings m_CrawlerSettings;
     [SerializeField] private LineRenderer m_LineRenderer;
     [SerializeField] private Rigidbody2D m_RigidBody;
+    [SerializeField] private int m_RopeResolution;
 
     private List<Vector3> allRopeSections = new();
     public Vector2 Orientation { get { return m_Orientation; } }
     public Vector2 TargetPosition { get { return m_TargetPosition.position; } }
     public bool NeedsNewPosition { get { return m_NeedNewPosition; } }
+
+    private void Awake()
+    {
+        m_RopePositions = new Vector3[m_RopeResolution];
+    }
 
     public void Initialize(float moveRate)
     {
@@ -29,31 +37,21 @@ public class Leg : MonoBehaviour
 
     private void Update()
     {
-        if (m_IsFalling || m_TimeElapsed > m_CrawlerSettings.LegMoveRate)
+        if (m_IsFalling)
         {
             return;
         }
 
-
-
-
-        //if (m_NeedNewPosition)
-        //{
-        //    m_NeedNewPosition = false;
-        //    FreezeConstraints();
-        //}
+        if (m_TimeElapsed > m_CrawlerSettings.LegMoveRate)
+        {
+            transform.position = m_TargetPosition.position;
+            return;
+        }
 
         float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
         Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
         transform.position = Vector3.Lerp(transform.position, target, time);
         m_TimeElapsed += Time.deltaTime;
-
-
-
-        //if (!m_NeedNewPosition)
-        //    transform.position = m_TargetPosition.position;
-
-
     }
 
     private void FixedUpdate()
@@ -121,8 +119,10 @@ public class Leg : MonoBehaviour
         m_LineRenderer.startWidth = ropeWidth;
         m_LineRenderer.endWidth = ropeWidth;
 
-        Vector3[] pos = new Vector3[2] { transform.position, m_Player.transform.position };
+        m_RopePositions[0] =  transform.position;
+        m_RopePositions[1] = m_Player.transform.position;
+
         m_LineRenderer.positionCount = 2;
-        m_LineRenderer.SetPositions(pos);
+        m_LineRenderer.SetPositions(m_RopePositions);
     }
 }
