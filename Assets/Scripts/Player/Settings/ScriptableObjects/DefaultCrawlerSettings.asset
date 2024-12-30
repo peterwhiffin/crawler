@@ -83,3 +83,9 @@ MonoBehaviour:
   <MaxCollisionAngle>k__BackingField: 2.3
   <LegSearchMultiplier>k__BackingField: 0.91
   <MaxHealth>k__BackingField: 300
+  <FootStepClips>k__BackingField:
+  - {fileID: 8300000, guid: a1c0c64bdf64f99419ba7c5329c1a63a, type: 3}
+  - {fileID: 8300000, guid: 64f41a12c92e82a4eb303e5daafc82f7, type: 3}
+  - {fileID: 8300000, guid: 9621c2af7e754394a918f34fa7dca26e, type: 3}
+  - {fileID: 8300000, guid: 012c0df2e260d5d4590beaca9c1a37ff, type: 3}
+  - {fileID: 8300000, guid: 73a6493412b0e5c418b9dcd33753e5c4, type: 3}

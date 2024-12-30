@@ -11,13 +11,15 @@ public class Gun : Equipment
     [SerializeField] private Transform m_FirePosition;
     [SerializeField] private float m_ProjectileRadius;
     [SerializeField] private float m_Accuracy;
-
-    
+    [SerializeField] private WeaponSettings m_Settings;
+    [SerializeField] private AudioSource m_AudioSource;
+    private bool m_IsAudioPlaying = false;
     public override Transform FirePosition { get { return m_FirePosition; } }
 
     private void Start()
     {
         m_LastFireTime = Time.time - m_FireRate;
+        m_AudioSource.clip = m_Settings.FireSound;
     }
 
     public override void StartPrimaryAttack()
@@ -29,9 +31,27 @@ public class Gun : Equipment
             //m_FirePosition.Rotate(new Vector3(0f, 0f, Random.Range(-m_Accuracy, m_Accuracy)));
             var rotation = m_FirePosition.eulerAngles;
 
-            rotation.z += Random.Range(-m_Accuracy, m_Accuracy);
-            prefab.Fire(m_FirePosition.position, Quaternion.Euler(rotation), m_ProjectileSpeed, m_Damage, m_ProjectileRadius);
+            rotation.z += Random.Range(-m_Settings.Accuracy, m_Settings.Accuracy);
+            prefab.Fire(m_FirePosition.position, Quaternion.Euler(rotation), m_Settings.ProjectileSpeed, m_Settings.Damage, m_Settings.ProjectileRadius);
+            
             m_LastFireTime = Time.time;
+
+            if (!m_AudioSource.isPlaying)
+            {
+                m_AudioSource.Play();             
+            }
+            else
+            {
+                
+            }
+            
+        }
+        else
+        {
+            //if (m_AudioSource.isPlaying)
+            //{
+            //    m_AudioSource.Stop();
+            //}
         }
     }
 
@@ -47,6 +67,9 @@ public class Gun : Equipment
 
     public override void CancelPrimaryAttack()
     {
-        
+        if (m_AudioSource.isPlaying)
+        {
+            m_AudioSource.Stop();
+        }
     }
 }

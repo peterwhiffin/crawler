@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerStats : Stats
 {
     [SerializeField] private Player m_Player;
+    public bool IsAlive { get { return m_IsAlive; } }
 
     private void Start()
     {

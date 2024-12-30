@@ -345,7 +345,7 @@ public class PlayerMotor : MonoBehaviour
 
         foreach (var hit in m_TempHits)
         {
-            if (!hit)
+            if (!hit || hit.collider.gameObject.layer != 6)
             {
                 continue;
             }

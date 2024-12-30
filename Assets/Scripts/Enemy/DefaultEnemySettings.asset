@@ -23,5 +23,5 @@ MonoBehaviour:
   <PlayerMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 0
-  <AttackDistance>k__BackingField: 10.35
+  <AttackDistance>k__BackingField: 14.36
   <MaxHealth>k__BackingField: 500

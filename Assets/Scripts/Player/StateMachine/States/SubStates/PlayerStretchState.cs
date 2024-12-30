@@ -35,6 +35,7 @@ public class PlayerStretchState : PlayerGroundedState
         if(m_InputHandler.MoveInput != Vector2.zero)
         {         
             m_Player.Motor.CheckCurrentLeg();
+            
         }      
 
         if (m_Player.Hotbar.IsAttacking || m_InputHandler.MoveInput != Vector2.zero)
@@ -57,11 +58,13 @@ public class PlayerStretchState : PlayerGroundedState
                 m_StateMachine.ChangeState(m_Player.IdleState);
             }
         }
+        
 
         if (m_HasLaunched)
         {
             m_StateMachine.ChangeState(m_Player.FallingState);
         }
+
     }
 
     public override void FixedUpdate()
@@ -80,9 +83,14 @@ public class PlayerStretchState : PlayerGroundedState
         {
             if (m_InputHandler.MoveInput != Vector2.zero)
             {
+                if (m_Player.Motor.IsPlayerAtMaxDistance())
+                {
+                   finalForce += m_Player.Motor.RestrainToRestPosition();
+                }
+
                 finalForce += m_Player.Motor.GetMoveForce(m_InputHandler.MoveInput);
             }
-            else 
+            else
             {
                 if (!m_Player.Motor.IsMouseInDeadZone())
                 {

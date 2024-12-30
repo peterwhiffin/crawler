@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Splines;
+
 
 public class Leg : MonoBehaviour
 {
@@ -19,6 +18,11 @@ public class Leg : MonoBehaviour
     [SerializeField] private LineRenderer m_LineRenderer;
     [SerializeField] private Rigidbody2D m_RigidBody;
     [SerializeField] private int m_RopeResolution;
+    [SerializeField] private AudioSource m_AudioSource;
+
+    
+
+    private bool m_FootStepPlayed = false;
 
     private List<Vector3> allRopeSections = new();
     public Vector2 Orientation { get { return m_Orientation; } }
@@ -45,13 +49,24 @@ public class Leg : MonoBehaviour
         if (m_TimeElapsed > m_CrawlerSettings.LegMoveRate)
         {
             transform.position = m_TargetPosition.position;
+            m_FootStepPlayed = false;
             return;
         }
+
+        
 
         float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
         Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
         transform.position = Vector3.Lerp(transform.position, target, time);
-        m_TimeElapsed += Time.deltaTime;
+
+        if (!m_FootStepPlayed && time >= .7f)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, m_CrawlerSettings.FootStepClips.Count);
+            m_AudioSource.PlayOneShot(m_CrawlerSettings.FootStepClips[randomIndex]);
+            m_FootStepPlayed = true;
+        }
+
+            m_TimeElapsed += Time.deltaTime;
     }
 
     private void FixedUpdate()

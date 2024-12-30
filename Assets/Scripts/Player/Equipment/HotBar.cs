@@ -5,7 +5,7 @@ public class HotBar : MonoBehaviour
 
 
     private bool m_PrimaryAttackInput;
-
+    [SerializeField] private Player m_Player;
     [SerializeField] private Equipment m_SelectedEquipment;
 
     public bool IsAttacking { get {  return m_PrimaryAttackInput; } }
@@ -24,7 +24,7 @@ public class HotBar : MonoBehaviour
 
     private void Update()
     {
-        if(m_PrimaryAttackInput)
+        if(m_PrimaryAttackInput && m_Player.Stats.IsAlive)
         {
             PrimaryAttackStarted();
         }

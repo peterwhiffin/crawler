@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Settings/Crawler Settings", fileName = "CrawlerSettings")]
@@ -33,4 +34,5 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float MaxCollisionAngle { get; private set; }
     [field: SerializeField] public float LegSearchMultiplier { get; private set; }
     [field: SerializeField] public float MaxHealth { get; private set; }
+    [field: SerializeField] public List<AudioClip> FootStepClips { get; private set; }
 }
