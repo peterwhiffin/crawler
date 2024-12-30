@@ -1,16 +1,18 @@
+using System;
 using UnityEngine;
 
-public class EnemyStats : MonoBehaviour
+public class EnemyStats : Stats
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Enemy m_Enemy;
+
+    private void Start()
     {
-        
+        m_CurrentHealth = m_Enemy.Settings.MaxHealth;
+        m_Enemy.HitBox.OnHit += ApplyDamage;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        m_Enemy.HitBox.OnHit -= ApplyDamage;
     }
 }

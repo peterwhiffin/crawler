@@ -52,13 +52,13 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 1
+      - m_Value: 14.78
         m_Name: Density
         m_Overridden: 1
-      - m_Value: 0.001
+      - m_Value: 0.0025
         m_Name: Sparkle Width
         m_Overridden: 1
-      - m_Value: 0.21
+      - m_Value: 0.06
         m_Name: HDRP Exposure Weight
         m_Overridden: 1
       - m_Value: 10
@@ -75,32 +75,38 @@ VisualEffect:
         m_Overridden: 1
     m_Vector2f:
       m_Array:
-      - m_Value: {x: 0.1, y: 0.5}
+      - m_Value: {x: 2, y: 7.88}
         m_Name: Size Min/Max
         m_Overridden: 1
-      - m_Value: {x: 50, y: 100}
+      - m_Value: {x: 1, y: 1}
         m_Name: Burst Count Min/Max
         m_Overridden: 1
-      - m_Value: {x: 0.2, y: 0.5}
+      - m_Value: {x: 1, y: 2}
         m_Name: Lifetime Min/Max
         m_Overridden: 1
+      - m_Value: {x: 0.2, y: 1}
+        m_Name: Loop Duration Min/Max
+        m_Overridden: 0
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 50, z: 0}
+      - m_Value: {x: 0, y: 0, z: 0}
         m_Name: Initial Velocity_vector
         m_Overridden: 1
       - m_Value: {x: 0, y: 0, z: 0}
         m_Name: Gravity Vector
         m_Overridden: 1
-      - m_Value: {x: 0, y: 1, z: 0}
+      - m_Value: {x: 0, y: 4.22, z: 0}
         m_Name: Bounds_center
         m_Overridden: 1
-      - m_Value: {x: 2, y: 2, z: 2}
+      - m_Value: {x: 0.14, y: 0.12, z: 2}
         m_Name: Bounds_size
         m_Overridden: 1
-      - m_Value: {x: 0, y: 0.17, z: 0}
+      - m_Value: {x: 0, y: 1.22, z: 0}
         m_Name: Initial Position
         m_Overridden: 1
+      - m_Value: {x: 200, y: 200, z: 200}
+        m_Name: Scale
+        m_Overridden: 0
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -116,10 +122,10 @@ VisualEffect:
       - m_Value:
           serializedVersion: 2
           key0: {r: 445.72183, g: 445.72183, b: 445.72183, a: 0}
-          key1: {r: 1, g: 1, b: 1, a: 0.6039216}
-          key2: {r: 1, g: 0, b: 0, a: 0.013692796}
+          key1: {r: 1, g: 1, b: 1, a: 1}
+          key2: {r: 1, g: 0, b: 0, a: 0.9577465}
           key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0.9577465}
+          key4: {r: 0, g: 0, b: 0, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
@@ -132,17 +138,17 @@ VisualEffect:
           ctime6: 0
           ctime7: 0
           atime0: 0
-          atime1: 3277
-          atime2: 5397
-          atime3: 23323
-          atime4: 54934
+          atime1: 14649
+          atime2: 65535
+          atime3: 65535
+          atime4: 65535
           atime5: 65535
           atime6: 0
           atime7: 0
           m_Mode: 0
           m_ColorSpace: 1
           m_NumColorKeys: 3
-          m_NumAlphaKeys: 6
+          m_NumAlphaKeys: 3
         m_Name: Color Over Life
         m_Overridden: 1
       - m_Value:
@@ -164,7 +170,7 @@ VisualEffect:
           ctime6: 0
           ctime7: 0
           atime0: 0
-          atime1: 65535
+          atime1: 3277
           atime2: 0
           atime3: 0
           atime4: 0
@@ -181,7 +187,7 @@ VisualEffect:
       m_Array:
       - m_Value: {fileID: 2800000, guid: 49cb5aa34272b034d8b754c65d9cdbfa, type: 3}
         m_Name: Sparkle Texture
-        m_Overridden: 0
+        m_Overridden: 1
     m_Bool:
       m_Array: []
 --- !u!73398921 &1624820557598023002

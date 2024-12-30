@@ -82,3 +82,4 @@ MonoBehaviour:
   <CollisionResetTime>k__BackingField: 2.02
   <MaxCollisionAngle>k__BackingField: 2.3
   <LegSearchMultiplier>k__BackingField: 0.91
+  <MaxHealth>k__BackingField: 300

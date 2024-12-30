@@ -46,7 +46,6 @@ public class EnemyPatrolState : EnemyState
         }
         else if(m_Enemy.Motor.IsAtPatrolGoal())
         {
-            Debug.Log("Is at patrol target");
             m_StateMachine.ChangeState(m_Enemy.IdleState);
         }
     }

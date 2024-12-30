@@ -1,20 +1,24 @@
+using System;
 using UnityEngine;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : Stats
 {
-    private float m_CurrentHealth = 100f;
-    private bool m_IsAlive = true;
-
     [SerializeField] private Player m_Player;
 
-    public void ApplyDamage(float damage)
+    private void Start()
     {
-        m_CurrentHealth -= damage;
+        m_CurrentHealth = m_Player.CrawlerSettings.MaxHealth;
+        m_Player.HitBox.OnHit += ApplyDamage;
+    }
 
-        if(m_CurrentHealth <= 0f)
-        {
-            m_IsAlive = false;
-        }
+    private void OnDestroy()
+    {
+        m_Player.HitBox.OnHit -= ApplyDamage;
+    }
 
+    public void ResetPlayer()
+    {
+        m_IsAlive = true;
+        m_CurrentHealth = m_Player.CrawlerSettings.MaxHealth;
     }
 }

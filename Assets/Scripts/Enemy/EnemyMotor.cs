@@ -4,10 +4,15 @@ using UnityEngine;
 public class EnemyMotor : MonoBehaviour
 {
     [SerializeField] private Enemy m_Enemy;
-    [SerializeField] private List<Transform> m_PatrolPositions = new();
+    [SerializeField] private SpawnZone m_SpawnZone;
     private List<Vector2> m_PlayerPositionHistory = new();
     private int m_PatrolIndex;
     [SerializeField] private EnemySettings m_Settings;
+
+    public void Initialize(SpawnZone zone)
+    {
+        m_SpawnZone = zone;
+    }
 
     public void PursuePlayer()
     {
@@ -20,14 +25,14 @@ public class EnemyMotor : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("enemy dot: " + Vector2.Dot(transform.forward, m_Enemy.transform.forward));
+        Debug.Log("enemy dot: " + Vector2.Dot(transform.position, m_Enemy.transform.right));
     }
 
     public void SetNextPatrolTarget()
     {
         m_PatrolIndex++;
 
-        if(m_PatrolIndex == m_PatrolPositions.Count)
+        if(m_PatrolIndex == m_SpawnZone.PatrolPositions.Count)
         {
             m_PatrolIndex = 0;
         }
@@ -35,19 +40,19 @@ public class EnemyMotor : MonoBehaviour
 
     public bool IsAtAttackDistance()
     {
-        return Vector2.Distance(transform.position, m_Enemy.Player.transform.position) <= m_Settings.m_AttackDistance;
+        return Vector2.Distance(transform.position, m_Enemy.Player.transform.position) <= m_Settings.AttackDistance;
     }
 
     public void Patrol()
     {
         Vector2 newPosition = transform.position;
-        newPosition = Vector2.MoveTowards(newPosition, m_PatrolPositions[m_PatrolIndex].position, m_Settings.MoveSpeed * Time.deltaTime);
+        newPosition = Vector2.MoveTowards(newPosition, m_SpawnZone.PatrolPositions[m_PatrolIndex].position, m_Settings.MoveSpeed * Time.deltaTime);
         transform.position = newPosition;
     }
 
     public bool IsAtPatrolGoal()
     {
-        return Vector2.Distance(transform.position, m_PatrolPositions[m_PatrolIndex].position) <= .2f;
+        return Vector2.Distance(transform.position, m_SpawnZone.PatrolPositions[m_PatrolIndex].position) <= .2f;
     }
 
     public void CachePlayerPosition(Vector2 position)
@@ -79,7 +84,7 @@ public class EnemyMotor : MonoBehaviour
 
     public bool PlayerWithinAttackRange()
     {
-        return Vector2.Distance(transform.position, m_Enemy.Player.transform.position) <= m_Settings.m_AttackDistance;
+        return Vector2.Distance(transform.position, m_Enemy.Player.transform.position) <= m_Settings.AttackDistance;
     }
 
     public bool PlayerWithinView()

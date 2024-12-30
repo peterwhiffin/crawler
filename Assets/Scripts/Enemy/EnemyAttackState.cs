@@ -30,7 +30,6 @@ public class EnemyAttackState : EnemyState
     {
         base.Update();
 
-        
         m_Enemy.CurrentEquipment.FirePosition.up = m_Enemy.Player.transform.position - m_Enemy.transform.position;
         m_Enemy.CurrentEquipment.StartPrimaryAttack();
         if (!m_Enemy.Motor.CanSeePlayer() || !m_Enemy.Motor.PlayerWithinAttackRange())

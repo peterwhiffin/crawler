@@ -10,6 +10,7 @@ public class EnemySettings : ScriptableObject
     [field: SerializeField] public float SightDistance { get; private set; }
     [field: SerializeField] public LayerMask EnvironmentMask { get; private set; }
     [field: SerializeField] public LayerMask PlayerMask { get; private set; }
-    [field: SerializeField] public float m_AttackDistance { get; private set; }
+    [field: SerializeField] public float AttackDistance { get; private set; }
+    [field: SerializeField] public float MaxHealth { get; private set; }
 }
 

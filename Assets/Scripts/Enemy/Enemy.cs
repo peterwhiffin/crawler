@@ -1,5 +1,6 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Enemy : MonoBehaviour
 {
     private StateMachine m_StateMachine;
@@ -13,11 +14,11 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] public EnemySettings Settings { get; private set; }
     [field: SerializeField] public EnemyMotor Motor { get; private set; }
     [field: SerializeField] public Player Player { get; private set; }
+    [field: SerializeField] public EnemyAnimation Animation { get; private set; }
+    [field: SerializeField] public HitBox HitBox { get; private set; }
+    [field: SerializeField] public EnemyStats Stats { get; private set; }
 
-    private void Start()
-    {
-        CreateStates();
-    }
+   
 
     private void CreateStates()
     {
@@ -28,6 +29,26 @@ public class Enemy : MonoBehaviour
         AttackState = new(m_StateMachine, this);
 
         m_StateMachine.Initialize(IdleState);
+        
+    }
+
+    public void Initialize(Player player, Slider healthbar, SpawnZone zone)
+    {
+        Player = player;
+        Animation.Initialize(healthbar);
+        Motor.Initialize(zone);
+        Stats.Died += OnEnemyDied;
+        CreateStates();
+    }
+
+    private void OnDestroy()
+    {
+        Stats.Died -= OnEnemyDied;
+    }
+
+    private void OnEnemyDied()
+    {
+        Destroy(gameObject);
     }
 
     private void Update()

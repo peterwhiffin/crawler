@@ -1,10 +1,12 @@
 using UnityEngine;
+using System;
 
 public class HitBox : MonoBehaviour, IHittable
 {
-    [SerializeField] private Player m_Player;
+    public Action<float> OnHit = delegate { };
+
     public void Hit(float damage)
     {
-
+        OnHit.Invoke(damage);
     }
 }

@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
+using System;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform m_Crosshair;
     [SerializeField] private Transform m_PlayerGraphic;
     [SerializeField] private LayerMask m_LegLayerMask;
+    
 
     public PlayerIdleState IdleState { get; private set; }
     public PlayerCrawlState CrawlState { get; private set; }
@@ -21,8 +24,18 @@ public class Player : MonoBehaviour
     public PlayerFallingState FallingState { get; private set; }
     [field: SerializeField] public HotBar Hotbar { get; private set; }
     [field: SerializeField] public PlayerMotor Motor { get; private set; }
+    [field: SerializeField] public PlayerAnimation Animation { get; private set; }
+    [field: SerializeField] public HitBox HitBox { get; private set; }
+    [field: SerializeField] public PlayerStats Stats { get; private set; }
     public CrawlerSettings CrawlerSettings { get { return m_CrawlerSettings; } }
     public InputHandler PlayerInput { get { return m_InputHandler; } }
+
+    public Action OnUpdate = delegate { };
+    public Action OnFixedUpdate = delegate { };
+    public Action OnLateUpdate = delegate { };
+
+    public Transform m_SpawnPosition;
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
@@ -35,22 +48,83 @@ public class Player : MonoBehaviour
         StretchState = new(m_StateMachine, this, m_InputHandler);
         FallingState = new(m_StateMachine, this, m_InputHandler);
         m_StateMachine.Initialize(IdleState);
+        OnUpdate += On_Update;
+        OnFixedUpdate += On_Fixed_Update;
+        OnLateUpdate += On_Late_Update;
+        Stats.Died += OnPlayerDied;
     }
 
-    private void LateUpdate()
+    private void OnDestroy()
+    {
+        OnUpdate -= On_Update;
+        OnFixedUpdate -= On_Fixed_Update;
+        OnLateUpdate -= On_Late_Update;
+    }
+
+    private void On_Update()
+    {
+        m_StateMachine.CurrentState.Update();
+    }
+
+    private void On_Fixed_Update()
+    {
+        m_StateMachine.CurrentState.FixedUpdate();
+    }
+
+    private void On_Late_Update()
     {
         m_StateMachine.CurrentState.LateUpdate();
     }
 
+    private void OnPlayerDied()
+    {
+        OnUpdate -= On_Update;
+        OnFixedUpdate -= On_Fixed_Update;
+        OnLateUpdate -= On_Late_Update;
+
+        Motor.LaunchPlayer();
+        StopAllCoroutines();
+        StartCoroutine(DeathTimer());
+    }
+
+    private IEnumerator DeathTimer()
+    {
+        float time = Time.time;
+
+        while (Time.time - time < 5f) 
+        {
+            yield return null;
+        }
+
+        ResetPlayer();
+    }
+
+    private void ResetPlayer()
+    {
+        Motor.EndLaunch();
+        transform.position = m_SpawnPosition.position;    
+        m_StateMachine.ChangeState(IdleState);
+        Animation.ResetPlayer();
+        Stats.ResetPlayer();
+        OnUpdate += On_Update;
+        OnFixedUpdate += On_Fixed_Update;
+        OnLateUpdate += On_Late_Update;
+    }
+
+    private void LateUpdate()
+    {
+        OnLateUpdate.Invoke();
+    }
+
     private void Update()
     {
-        m_StateMachine.CurrentState.Update();
+        OnUpdate.Invoke();   
         m_Crosshair.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
     }
 
     private void FixedUpdate()
     {
-        m_StateMachine.CurrentState.FixedUpdate();
+        OnFixedUpdate.Invoke();
     }
 
     public void LookAtCursor()

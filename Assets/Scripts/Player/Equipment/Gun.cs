@@ -6,8 +6,13 @@ public class Gun : Equipment
 
     [SerializeField] private float m_ProjectileSpeed;
     [SerializeField] private float m_FireRate;
+    [SerializeField] private float m_Damage;
     [SerializeField] private Projectile m_ProjectilePrefab;
     [SerializeField] private Transform m_FirePosition;
+    [SerializeField] private float m_ProjectileRadius;
+    [SerializeField] private float m_Accuracy;
+
+    
     public override Transform FirePosition { get { return m_FirePosition; } }
 
     private void Start()
@@ -20,7 +25,12 @@ public class Gun : Equipment
         if(CheckFireRate())
         {
             Projectile prefab = Instantiate(m_ProjectilePrefab);
-            prefab.Fire(m_FirePosition.position, m_FirePosition.rotation, m_ProjectileSpeed);
+            //m_FirePosition.rotation = Quaternion.identity;
+            //m_FirePosition.Rotate(new Vector3(0f, 0f, Random.Range(-m_Accuracy, m_Accuracy)));
+            var rotation = m_FirePosition.eulerAngles;
+
+            rotation.z += Random.Range(-m_Accuracy, m_Accuracy);
+            prefab.Fire(m_FirePosition.position, Quaternion.Euler(rotation), m_ProjectileSpeed, m_Damage, m_ProjectileRadius);
             m_LastFireTime = Time.time;
         }
     }
