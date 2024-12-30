@@ -35,4 +35,7 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float LegSearchMultiplier { get; private set; }
     [field: SerializeField] public float MaxHealth { get; private set; }
     [field: SerializeField] public List<AudioClip> FootStepClips { get; private set; }
+    [field: SerializeField] public float FootStepRate { get; private set; }
+    [field: SerializeField] public float CameraSmoothRate { get; private set; }
+    [field: SerializeField] public float MaxCameraDistance { get; private set; }
 }

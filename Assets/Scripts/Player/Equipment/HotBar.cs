@@ -10,6 +10,16 @@ public class HotBar : MonoBehaviour
 
     public bool IsAttacking { get {  return m_PrimaryAttackInput; } }
 
+    private void Start()
+    {
+        m_Player.Stats.Died += OnPlayerDied;
+    }
+
+    private void OnDestroy()
+    {
+        m_Player.Stats.Died -= OnPlayerDied;
+    }
+
     public void PrimaryAttackInput(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -19,14 +29,22 @@ public class HotBar : MonoBehaviour
         else if (context.canceled)
         {
             m_PrimaryAttackInput = false;
+            PrimaryAttackCancelled();
         }
+    }
+
+    private void OnPlayerDied()
+    {
+        PrimaryAttackCancelled();
+        m_PrimaryAttackInput = false;
     }
 
     private void Update()
     {
-        if(m_PrimaryAttackInput && m_Player.Stats.IsAlive)
+        if(m_PrimaryAttackInput)
         {
-            PrimaryAttackStarted();
+            if(m_Player.Stats.IsAlive)
+                PrimaryAttackStarted();
         }
     }
 

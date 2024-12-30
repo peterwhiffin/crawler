@@ -8,7 +8,7 @@ public class Leg : MonoBehaviour
     private float m_TimeElapsed;    
     private bool m_IsFalling = false;
     private bool m_NeedNewPosition = false;
-    
+    private float m_LastFootStepTime;
     private Vector3[] m_RopePositions;
 
     [SerializeField] private Player m_Player;
@@ -19,7 +19,7 @@ public class Leg : MonoBehaviour
     [SerializeField] private Rigidbody2D m_RigidBody;
     [SerializeField] private int m_RopeResolution;
     [SerializeField] private AudioSource m_AudioSource;
-
+    
     
 
     private bool m_FootStepPlayed = false;
@@ -32,6 +32,7 @@ public class Leg : MonoBehaviour
     private void Awake()
     {
         m_RopePositions = new Vector3[m_RopeResolution];
+        m_LastFootStepTime = Time.time;
     }
 
     public void Initialize(float moveRate)
@@ -48,23 +49,25 @@ public class Leg : MonoBehaviour
 
         if (m_TimeElapsed > m_CrawlerSettings.LegMoveRate)
         {
+            if (!m_FootStepPlayed && Time.time - m_LastFootStepTime > m_CrawlerSettings.FootStepRate)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, m_CrawlerSettings.FootStepClips.Count);
+                m_AudioSource.PlayOneShot(m_CrawlerSettings.FootStepClips[randomIndex]);
+                m_FootStepPlayed = true;
+                m_LastFootStepTime = Time.time;
+            }
+
             transform.position = m_TargetPosition.position;
-            m_FootStepPlayed = false;
             return;
         }
 
-        
 
+        m_FootStepPlayed = false;
         float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
         Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
         transform.position = Vector3.Lerp(transform.position, target, time);
 
-        if (!m_FootStepPlayed && time >= .7f)
-        {
-            int randomIndex = UnityEngine.Random.Range(0, m_CrawlerSettings.FootStepClips.Count);
-            m_AudioSource.PlayOneShot(m_CrawlerSettings.FootStepClips[randomIndex]);
-            m_FootStepPlayed = true;
-        }
+        
 
             m_TimeElapsed += Time.deltaTime;
     }

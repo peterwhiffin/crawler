@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 using System;
 using System.Collections;
+using Unity.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform m_Crosshair;
     [SerializeField] private Transform m_PlayerGraphic;
     [SerializeField] private LayerMask m_LegLayerMask;
-    
+    [SerializeField] private Transform m_CameraTarget;
 
     public PlayerIdleState IdleState { get; private set; }
     public PlayerCrawlState CrawlState { get; private set; }
@@ -118,8 +119,23 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        OnUpdate.Invoke();   
-        m_Crosshair.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
+        OnUpdate.Invoke();
+        var cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
+        m_Crosshair.position = Camera.main.ScreenToWorldPoint(cursorPosition);
+
+        
+        var playerScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
+        var newCameraPosition = playerScreenPosition + (cursorPosition - playerScreenPosition) * .5f;
+        var pos = Camera.main.ScreenToWorldPoint(newCameraPosition);
+
+        if (Vector2.Distance(transform.position, pos) < m_CrawlerSettings.MaxCameraDistance)
+        {          
+            m_CameraTarget.position = Vector3.Lerp(m_CameraTarget.position, pos, Time.deltaTime / m_CrawlerSettings.CameraSmoothRate);
+        }
+        else 
+        {
+            m_CameraTarget.position = Vector3.Lerp(m_CameraTarget.position, transform.position + ((pos - transform.position).normalized * m_CrawlerSettings.MaxCameraDistance), Time.deltaTime / m_CrawlerSettings.CameraSmoothRate);
+        }
     }
 
     private void FixedUpdate()
