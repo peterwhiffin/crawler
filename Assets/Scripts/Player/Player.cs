@@ -1,10 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.InputSystem;
-using Unity.Cinemachine;
 using System;
 using System.Collections;
-using Unity.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -37,6 +33,7 @@ public class Player : MonoBehaviour
 
     public Transform m_SpawnPosition;
 
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
@@ -53,6 +50,7 @@ public class Player : MonoBehaviour
         OnFixedUpdate += On_Fixed_Update;
         OnLateUpdate += On_Late_Update;
         Stats.Died += OnPlayerDied;
+        m_Crosshair.position = transform.position;
     }
 
     private void OnDestroy()
@@ -110,11 +108,37 @@ public class Player : MonoBehaviour
         OnUpdate += On_Update;
         OnFixedUpdate += On_Fixed_Update;
         OnLateUpdate += On_Late_Update;
+        m_CameraTarget.position = transform.position;
+        m_Crosshair.position = transform.position;
     }
 
     private void LateUpdate()
     {
         OnLateUpdate.Invoke();
+
+        var cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
+        var currentCameraPosition = transform.position;
+        var direction = (m_Crosshair.position - transform.position).normalized;
+        var distance = Vector3.Distance(m_Crosshair.position, transform.position);
+
+        float offset = 1f;
+
+        if(m_StateMachine.CurrentState == StretchState)
+        {
+            offset = -1f;
+        }
+
+        if (distance > m_CrawlerSettings.CrosshairCameraRange.x)
+        {
+            var range = m_CrawlerSettings.CrosshairCameraRange.y - m_CrawlerSettings.CrosshairCameraRange.x;
+            var distanceFromLimit = Mathf.Clamp(distance - m_CrawlerSettings.CrosshairCameraRange.x, 0f, range);
+            
+            var t = distanceFromLimit / range;
+            
+            currentCameraPosition += direction * m_CrawlerSettings.MaxCameraDistance * t * offset;         
+        }
+
+        m_CameraTarget.position = Vector3.MoveTowards(m_CameraTarget.position, currentCameraPosition, Mathf.Clamp(Time.deltaTime * m_CrawlerSettings.CameraSmoothRate + Vector3.Distance(m_CameraTarget.position, currentCameraPosition), 0f, m_CrawlerSettings.MaxCameraSpeed));
     }
 
     private void Update()
@@ -122,20 +146,6 @@ public class Player : MonoBehaviour
         OnUpdate.Invoke();
         var cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
         m_Crosshair.position = Camera.main.ScreenToWorldPoint(cursorPosition);
-
-        
-        var playerScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
-        var newCameraPosition = playerScreenPosition + (cursorPosition - playerScreenPosition) * .5f;
-        var pos = Camera.main.ScreenToWorldPoint(newCameraPosition);
-
-        if (Vector2.Distance(transform.position, pos) < m_CrawlerSettings.MaxCameraDistance)
-        {          
-            m_CameraTarget.position = Vector3.Lerp(m_CameraTarget.position, pos, Time.deltaTime / m_CrawlerSettings.CameraSmoothRate);
-        }
-        else 
-        {
-            m_CameraTarget.position = Vector3.Lerp(m_CameraTarget.position, transform.position + ((pos - transform.position).normalized * m_CrawlerSettings.MaxCameraDistance), Time.deltaTime / m_CrawlerSettings.CameraSmoothRate);
-        }
     }
 
     private void FixedUpdate()

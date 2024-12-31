@@ -32,7 +32,7 @@ public class SpawnZone : MonoBehaviour
     {
         float time = Time.time;
 
-        while(Time.time - time < m_RespawnTime)
+        while(Time.time - time < m_RespawnTime || Vector3.Distance(transform.position, m_Player.transform.position) < 15f)
         {
             yield return null;
         }

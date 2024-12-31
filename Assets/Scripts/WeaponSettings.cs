@@ -10,4 +10,5 @@ public class WeaponSettings : ScriptableObject
     [field: SerializeField] public float Accuracy { get; private set; }
     [field: SerializeField] public Projectile ProjectilePrefab { get; private set; }
     [field: SerializeField] public AudioClip FireSound { get; private set; }
+    [field: SerializeField] public float MinimumAudioTime { get; private set; }
 }

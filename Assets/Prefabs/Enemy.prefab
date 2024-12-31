@@ -376,7 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ProjectileSpeed: 8.46
   m_FireRate: 0.67
-  m_Damage: 50
+  m_Damage: 0.1
   m_ProjectilePrefab: {fileID: 2286319929783529499, guid: 8cd7bab1e66d43f4d9e0c6abdb8c21ff, type: 3}
   m_FirePosition: {fileID: 7476013599550913789}
   m_ProjectileRadius: 0.29
@@ -459,7 +459,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1025090763
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0b3c18f5959451643bd4e621053fff0f, type: 3}
   m_Color: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}

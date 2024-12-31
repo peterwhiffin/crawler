@@ -22,7 +22,7 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] private Transform m_RestPosition;
     [SerializeField] private LayerMask m_LegLayerMask;
     [SerializeField] private int m_MaxContacts;
-
+    public Rigidbody2D Rigidbody {  get { return m_RigidBody; } }
     private void Awake()
     {
         m_Contacts = new ContactPoint2D[m_MaxContacts];

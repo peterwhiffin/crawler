@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Gun : Equipment
@@ -15,7 +16,8 @@ public class Gun : Equipment
     [SerializeField] private AudioSource m_AudioSource;
     private bool m_IsAudioPlaying = false;
     public override Transform FirePosition { get { return m_FirePosition; } }
-
+    private float m_AudioPlayTime;
+    private Coroutine m_AudioEndRoutine;
     private void Start()
     {
         m_LastFireTime = Time.time - m_FireRate;
@@ -38,6 +40,7 @@ public class Gun : Equipment
 
             if (!m_AudioSource.isPlaying)
             {
+                m_AudioPlayTime = Time.time;
                 m_AudioSource.Play();             
             }
             else
@@ -69,7 +72,29 @@ public class Gun : Equipment
     {
         if (m_AudioSource.isPlaying)
         {
-            m_AudioSource.Stop();
+            if (Time.time - m_AudioPlayTime > m_Settings.MinimumAudioTime)
+            {
+                m_AudioSource.Stop();
+            }
+            else
+            {
+                if(m_AudioEndRoutine != null)
+                {
+                    StopCoroutine(m_AudioEndRoutine);
+                }
+
+                StartCoroutine(EndAudioAfterTime());
+            }
         }
+    }
+
+    private IEnumerator EndAudioAfterTime()
+    {
+        while(Time.time - m_AudioPlayTime < m_Settings.MinimumAudioTime)
+        {
+            yield return null;
+        }
+
+        m_AudioSource.Stop();
     }
 }

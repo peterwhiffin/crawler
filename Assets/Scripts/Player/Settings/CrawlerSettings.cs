@@ -38,4 +38,10 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float FootStepRate { get; private set; }
     [field: SerializeField] public float CameraSmoothRate { get; private set; }
     [field: SerializeField] public float MaxCameraDistance { get; private set; }
+    [field: SerializeField] public float StretchCameraDistance { get; private set; }
+    [field: SerializeField] public float PlayerVelocityCameraThreshold { get; private set; }
+    [field: SerializeField] public float MouseSensitivity { get; private set; }
+    [field: SerializeField] public float CrosshairThreshold { get; private set; }
+    [field: SerializeField] public Vector2 CrosshairCameraRange { get; private set; }
+    [field: SerializeField] public float MaxCameraSpeed { get; private set; }
 }

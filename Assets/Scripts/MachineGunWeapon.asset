@@ -19,3 +19,4 @@ MonoBehaviour:
   <Accuracy>k__BackingField: 3
   <ProjectilePrefab>k__BackingField: {fileID: 2286319929783529499, guid: 1f699223b6bb10e4abf65bc63cadef2f, type: 3}
   <FireSound>k__BackingField: {fileID: 8300000, guid: 0583f043662859c4caa1392b228efc03, type: 3}
+  <MinimumAudioTime>k__BackingField: 0.16
