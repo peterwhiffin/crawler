@@ -29,8 +29,6 @@ public class Gun : Equipment
         if(CheckFireRate())
         {
             Projectile prefab = Instantiate(m_ProjectilePrefab);
-            //m_FirePosition.rotation = Quaternion.identity;
-            //m_FirePosition.Rotate(new Vector3(0f, 0f, Random.Range(-m_Accuracy, m_Accuracy)));
             var rotation = m_FirePosition.eulerAngles;
 
             rotation.z += Random.Range(-m_Settings.Accuracy, m_Settings.Accuracy);
@@ -38,23 +36,19 @@ public class Gun : Equipment
             
             m_LastFireTime = Time.time;
 
-            if (!m_AudioSource.isPlaying)
+            if (m_Settings.IsAudioOneShot)
             {
-                m_AudioPlayTime = Time.time;
-                m_AudioSource.Play();             
+                m_AudioSource.PlayOneShot(m_AudioSource.clip);
             }
             else
             {
-                
-            }
-            
-        }
-        else
-        {
-            //if (m_AudioSource.isPlaying)
-            //{
-            //    m_AudioSource.Stop();
-            //}
+
+                if (!m_AudioSource.isPlaying)
+                {
+                    m_AudioPlayTime = Time.time;
+                    m_AudioSource.Play();
+                }
+            }           
         }
     }
 

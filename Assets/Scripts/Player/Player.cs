@@ -168,4 +168,11 @@ public class Player : MonoBehaviour
 
         m_PlayerGraphic.up = lookTarget2;
     }
+
+    
+
+    public void ItemPickedUp(Item item)
+    {
+        item.Details.AffectPlayer(this);
+    }
 }

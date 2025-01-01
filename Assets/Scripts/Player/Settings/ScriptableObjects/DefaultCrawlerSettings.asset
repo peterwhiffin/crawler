@@ -90,7 +90,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 012c0df2e260d5d4590beaca9c1a37ff, type: 3}
   - {fileID: 8300000, guid: 73a6493412b0e5c418b9dcd33753e5c4, type: 3}
   <FootStepRate>k__BackingField: 0.6
-  <CameraSmoothRate>k__BackingField: 5.28
+  <CameraSmoothRate>k__BackingField: 3.87
   <MaxCameraDistance>k__BackingField: 6.73
   <StretchCameraDistance>k__BackingField: 36.7
   <PlayerVelocityCameraThreshold>k__BackingField: 3.18

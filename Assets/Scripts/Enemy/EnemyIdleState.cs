@@ -43,7 +43,6 @@ public class EnemyIdleState : EnemyState
         }
         else if (Time.time - m_EnterTime > m_Enemy.Settings.IdleTime)
         {
-            Debug.Log("going to patrol");
             m_StateMachine.ChangeState(m_Enemy.PatrolState);
         }
     }

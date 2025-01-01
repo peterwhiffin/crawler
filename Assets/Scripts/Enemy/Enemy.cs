@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 public class Enemy : MonoBehaviour
@@ -48,7 +49,17 @@ public class Enemy : MonoBehaviour
 
     private void OnEnemyDied()
     {
+        DropItems();
         Destroy(gameObject);
+    }
+    
+    private void DropItems()
+    {
+        foreach(var item in Settings.GuaranteedDrops)
+        {
+            var prefab = Instantiate(item.ItemPrefab);
+            prefab.transform.position = transform.position;
+        }
     }
 
     private void Update()

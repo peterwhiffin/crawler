@@ -12,17 +12,21 @@ public class PlayerAnimation : Animation
     [SerializeField, ColorUsage(true, true)] private Color m_FlashColor;
     [SerializeField, ColorUsage(true, true)] private Color m_DefaultColor;
     [SerializeField, ColorUsage(true, true)] private Color m_DefaultRopeColor;
+    [SerializeField, ColorUsage(true, true)] private Color m_HealColor;
     [SerializeField] private Material m_RopeMaterial;
+
     private Coroutine m_FlashRoutine;
 
     private void Start()
     {
         m_Player.Stats.Damaged += OnDamaged;
+        m_Player.Stats.Healed += OnHealed;
     }
 
     private void OnDestroy()
     {
         m_Player.Stats.Damaged -= OnDamaged;
+        m_Player.Stats.Healed -= OnHealed;
     }
 
     private void Update()
@@ -35,28 +39,35 @@ public class PlayerAnimation : Animation
         base.OnDamaged(damage);
 
         m_HealthBar.value = m_Player.Stats.CurrentHealth / m_Player.CrawlerSettings.MaxHealth;
-        PlayHitAnimation();
+        PlayFlashAnimation(m_FlashColor, m_FlashDuration);
     }
 
-    private void PlayHitAnimation()
+    public override void OnHealed()
+    {
+        base.OnHealed();
+        m_HealthBar.value = m_Player.Stats.CurrentHealth / m_Player.CrawlerSettings.MaxHealth;
+        PlayFlashAnimation(m_HealColor, m_FlashDuration + .3f);
+    }
+
+    private void PlayFlashAnimation(Color flashColor, float duration)
     {
         if(m_FlashRoutine != null)
         {
             StopCoroutine(m_FlashRoutine);
         }
 
-       m_FlashRoutine = StartCoroutine(HitFlash());
+       m_FlashRoutine = StartCoroutine(HitFlash(flashColor, duration));
     }
 
-    private IEnumerator HitFlash()
+    private IEnumerator HitFlash(Color flashColor, float duration)
     {
         float time = Time.time;
-        m_SpriteRenderer.sharedMaterial.SetColor("_Color", m_FlashColor);
-        m_RopeMaterial.SetColor("_Color", m_FlashColor);
+        m_SpriteRenderer.sharedMaterial.SetColor("_Color", flashColor);
+        m_RopeMaterial.SetColor("_Color", flashColor);
 
-        while (Time.time - time < m_FlashDuration)
+        while (Time.time - time < duration)
         {
-            var t = (Time.time - time) / m_FlashDuration;
+            var t = (Time.time - time) / duration;
             var currentColor = m_RopeMaterial.GetColor("_Color");
             var nextColor = Color.Lerp(currentColor, m_DefaultRopeColor, t);
             m_RopeMaterial.SetColor("_Color", nextColor);
@@ -65,15 +76,12 @@ public class PlayerAnimation : Animation
             nextColor = Color.Lerp(currentColor, m_DefaultColor, t);
             m_SpriteRenderer.sharedMaterial.SetColor("_Color", nextColor);
             
-
             yield return null;
         }
 
         m_SpriteRenderer.sharedMaterial.SetColor("_Color", m_DefaultColor);
         m_RopeMaterial.SetColor("_Color", m_DefaultRopeColor);
     }
-
-
 
     public void ResetPlayer()
     {

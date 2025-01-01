@@ -25,3 +25,5 @@ MonoBehaviour:
     m_Bits: 0
   <AttackDistance>k__BackingField: 14.36
   <MaxHealth>k__BackingField: 500
+  <GuaranteedDrops>k__BackingField:
+  - {fileID: 11400000, guid: 27fd347d4d65b8948ae9b3fde7c4f01a, type: 2}

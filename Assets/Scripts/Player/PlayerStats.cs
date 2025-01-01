@@ -22,4 +22,12 @@ public class PlayerStats : Stats
         m_IsAlive = true;
         m_CurrentHealth = m_Player.CrawlerSettings.MaxHealth;
     }
+
+    public override void ApplyHeal(float health)
+    {
+        base.ApplyHeal(health);
+
+        m_CurrentHealth = Mathf.Clamp(m_CurrentHealth + health, 0f, m_Player.CrawlerSettings.MaxHealth);
+        Healed.Invoke();
+    }
 }

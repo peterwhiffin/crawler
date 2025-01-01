@@ -25,7 +25,7 @@ public class EnemyMotor : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("enemy dot: " + Vector2.Dot(transform.position, m_Enemy.transform.right));
+        //Debug.Log("enemy dot: " + Vector2.Dot(transform.position, m_Enemy.transform.right));
     }
 
     public void SetNextPatrolTarget()

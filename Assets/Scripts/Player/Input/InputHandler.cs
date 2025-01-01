@@ -7,7 +7,8 @@ public class InputHandler : MonoBehaviour
     public Vector2 LookInput { get; set; }
     public bool FireInput { get; set; }
     public bool StretchInput { get; set; }
-
+    public bool JumpInput { get; set; }
+    public bool DashInput { get; set; }
 
     public void OnMoveInput(InputAction.CallbackContext context) 
     {
@@ -40,6 +41,30 @@ public class InputHandler : MonoBehaviour
         else if (context.canceled)
         {
             StretchInput = false;
+        }
+    }
+
+    public void OnJumpInput(InputAction.CallbackContext context)
+    {
+        if(context.started)
+        {
+            JumpInput = true;
+        }
+        else if (context.canceled)
+        {
+            JumpInput = false;
+        }
+    }
+
+    public void OnDashInput(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            DashInput = true;
+        }
+        else if (context.canceled)
+        {
+            DashInput = false;
         }
     }
 }

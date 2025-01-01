@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Settings/Enemy Settings", fileName = "NewEnemySettings")]
@@ -12,5 +13,6 @@ public class EnemySettings : ScriptableObject
     [field: SerializeField] public LayerMask PlayerMask { get; private set; }
     [field: SerializeField] public float AttackDistance { get; private set; }
     [field: SerializeField] public float MaxHealth { get; private set; }
+    [field: SerializeField] public List<ItemDetails> GuaranteedDrops { get; private set; }
 }
 
