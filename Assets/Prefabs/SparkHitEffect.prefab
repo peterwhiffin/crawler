@@ -185,7 +185,7 @@ VFXRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1025090763
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: -70
 --- !u!114 &367783506153916389
 MonoBehaviour:
   m_ObjectHideFlags: 0

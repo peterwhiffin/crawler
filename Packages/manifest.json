@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.maguinho.2dvfx": "https://github.com/Magnno/Unity_2D_VFX.git",
     "com.unity.ai.navigation": "2.0.5",
     "com.unity.asset-manager-for-unity": "1.2.4",
     "com.unity.cinemachine": "3.1.2",
