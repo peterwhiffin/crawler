@@ -26,7 +26,7 @@ public class PlayerFallingState : PlayerInAirState
         base.Update();
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
-
+        m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
         //if (Time.time - m_TimeEntered > m_Player.Motor.GetLaunchTime() && m_Player.Motor.IsPlayersVelocityBelowLandingThreshold())
         //{
 

@@ -19,7 +19,7 @@ public class Leg : MonoBehaviour
     [SerializeField] private Rigidbody2D m_RigidBody;
     [SerializeField] private int m_RopeResolution;
     [SerializeField] private AudioSource m_AudioSource;
-    
+    [SerializeField] private Transform m_RopeTarget;
     
 
     private bool m_FootStepPlayed = false;
@@ -138,7 +138,7 @@ public class Leg : MonoBehaviour
         m_LineRenderer.endWidth = ropeWidth;
 
         m_RopePositions[0] =  transform.position;
-        m_RopePositions[1] = m_Player.transform.position;
+        m_RopePositions[1] = m_RopeTarget.position;
 
         m_LineRenderer.positionCount = 2;
         m_LineRenderer.SetPositions(m_RopePositions);

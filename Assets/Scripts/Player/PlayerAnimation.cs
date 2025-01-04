@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerAnimation : Animation
 {
     [SerializeField] private Player m_Player;
+    [SerializeField] private Transform m_Graphic;
     [SerializeField] private Slider m_HealthBar;
     [SerializeField] SpriteRenderer m_SpriteRenderer;
     [SerializeField] private float m_FlashDuration;
@@ -81,6 +82,11 @@ public class PlayerAnimation : Animation
 
         m_SpriteRenderer.sharedMaterial.SetColor("_Color", m_DefaultColor);
         m_RopeMaterial.SetColor("_Color", m_DefaultRopeColor);
+    }
+
+    public void SetCapsulePosition(Vector2 moveDirection)
+    {    
+        m_Graphic.localPosition = Vector3.MoveTowards(m_Graphic.localPosition, moveDirection.normalized * m_Player.CrawlerSettings.MaxGraphicLocalStretch, Time.deltaTime * m_Player.CrawlerSettings.LocalStretchLerp);
     }
 
     public void ResetPlayer()

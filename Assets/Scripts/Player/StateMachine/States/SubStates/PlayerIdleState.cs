@@ -21,6 +21,7 @@ public class PlayerIdleState : PlayerGroundedState
         base.Update();
 
 
+        m_Player.Animation.SetCapsulePosition(Vector2.zero);
 
         if (m_Player.Motor.LegNeedsToMove())
         {

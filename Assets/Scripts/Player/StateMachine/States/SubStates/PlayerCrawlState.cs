@@ -22,6 +22,7 @@ public class PlayerCrawlState : PlayerGroundedState
         m_Player.Motor.CheckCurrentLeg();
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
+        m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
 
         if (m_InputHandler.StretchInput)
         {

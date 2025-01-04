@@ -16,14 +16,14 @@ MonoBehaviour:
   <IdleTime>k__BackingField: 3
   <PursueSpeed>k__BackingField: 1
   <FieldOfView>k__BackingField: 180
-  <SightDistance>k__BackingField: 13.6
+  <SightDistance>k__BackingField: 6.94
   <EnvironmentMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 192
   <PlayerMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 0
-  <AttackDistance>k__BackingField: 14.36
+  <AttackDistance>k__BackingField: 10
   <MaxHealth>k__BackingField: 500
   <GuaranteedDrops>k__BackingField:
   - {fileID: 11400000, guid: 27fd347d4d65b8948ae9b3fde7c4f01a, type: 2}

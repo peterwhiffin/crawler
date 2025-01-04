@@ -20,7 +20,7 @@ MonoBehaviour:
   <SpringForce>k__BackingField: 163.9
   <DampForce>k__BackingField: 0.5
   <MaxSpringStretch>k__BackingField: 0.91
-  <WallSuspensionDistance>k__BackingField: 1.01
+  <WallSuspensionDistance>k__BackingField: 1.13
   <WallSuspensionSpringStrength>k__BackingField: 156.2
   <WallSuspensionDamperStrength>k__BackingField: 1
   <MaxLegDistance>k__BackingField: 2.14
@@ -98,3 +98,5 @@ MonoBehaviour:
   <CrosshairThreshold>k__BackingField: 4.09
   <CrosshairCameraRange>k__BackingField: {x: 3.75, y: 21.68}
   <MaxCameraSpeed>k__BackingField: 0.24
+  <MaxGraphicLocalStretch>k__BackingField: 0.1
+  <LocalStretchLerp>k__BackingField: 1

@@ -44,4 +44,6 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float CrosshairThreshold { get; private set; }
     [field: SerializeField] public Vector2 CrosshairCameraRange { get; private set; }
     [field: SerializeField] public float MaxCameraSpeed { get; private set; }
+    [field: SerializeField] public float MaxGraphicLocalStretch {  get; private set; }
+    [field: SerializeField] public float LocalStretchLerp { get; private set; }
 }

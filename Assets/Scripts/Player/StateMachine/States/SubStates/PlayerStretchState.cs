@@ -41,10 +41,12 @@ public class PlayerStretchState : PlayerGroundedState
         if (m_Player.Hotbar.IsAttacking || m_InputHandler.MoveInput != Vector2.zero)
         {
             m_Player.LookAtCursor();
+            m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
         }
         else
         {
             m_Player.LookAtStretchDirection();
+        
         }
 
         if (!m_InputHandler.StretchInput)
