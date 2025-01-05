@@ -21,7 +21,7 @@ public class Spikes : MonoBehaviour, IDamaging
             {
                 m_LastHit = Time.time;
 
-                hittable.Hit(m_Damage);
+                hittable.Hit(m_Damage, Vector3.zero, Vector3.zero);
             }
         }
     }

@@ -53,7 +53,8 @@ public class Projectile : MonoBehaviour
         {
             if(hit.collider.TryGetComponent(out IHittable hittable))
             {
-                hittable.Hit(m_Damage);
+                hittable.Hit(m_Damage, hit.point, hit.normal);
+                
             }
 
             SpawnHitEffect(hit.point, hit.normal);
