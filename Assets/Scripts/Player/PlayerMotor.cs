@@ -22,6 +22,10 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] private Transform m_RestPosition;
     [SerializeField] private LayerMask m_LegLayerMask;
     [SerializeField] private int m_MaxContacts;
+
+    public bool IsGrappled = false;
+    public Vector2 GrapplePosition;
+
     public Rigidbody2D Rigidbody {  get { return m_RigidBody; } }
     private void Awake()
     {
@@ -36,6 +40,18 @@ public class PlayerMotor : MonoBehaviour
             GetLegHits(leg.Orientation);
             leg.SnapPosition(m_BestHit.point);
         }
+    }
+
+    public Vector2 GetGrappleForce()
+    {
+        IsGrappled = false;
+        return m_CrawlerSettings.GrappleForce * (GrapplePosition - (Vector2)transform.position).normalized;
+    }
+
+    public void HookGrapple(Vector2 position)
+    {
+        IsGrappled = true;
+        GrapplePosition = position;
     }
 
     public void EndLaunch()
@@ -229,6 +245,38 @@ public class PlayerMotor : MonoBehaviour
         return Vector3.Distance(transform.position, m_RestPosition.position) >= m_CrawlerSettings.LegMoveThreshold;
     }
 
+    public Vector2 GetJumpDirection()
+    {
+        Vector2 direction = Vector2.zero;
+
+        foreach(var leg in m_Legs)
+        {
+            direction += (Vector2)leg.transform.position;
+        }
+
+        direction /= 4;
+
+        direction = direction - (Vector2)transform.position;
+
+        return -direction.normalized;
+    }
+
+    public void CheckLegDistance(Leg leg)
+    {
+        if (Vector3.Distance(leg.TargetPosition, transform.position) > m_CrawlerSettings.MaxLegDistance)
+        {
+            BreakLeg(leg);
+        }
+    }
+
+    public void CheckLegsInAir()
+    {
+        foreach(var leg in m_Legs)
+        {
+            CheckLegDistance(leg);
+        }
+    }
+
     public void CheckCurrentLeg()
     {
         if (!m_Legs[m_LegIndex].IsDoneMoving())
@@ -247,20 +295,32 @@ public class PlayerMotor : MonoBehaviour
 
         if (!GetLegHits(m_Legs[nextIndex].Orientation) || Vector3.Distance(m_Legs[nextIndex].TargetPosition, m_BestHit.point) < m_CrawlerSettings.MinimumLegMoveDistance)
         {
+            CheckLegDistance(m_Legs[nextIndex]);
             return;
         }
-
-
-        
-
 
         m_Legs[m_LegIndex].SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
         return;
     }
 
+    public void BreakLeg(Leg leg)
+    {
+        leg.PlayerLaunched();
+
+        if (!m_LegsWithoutPosition.Contains(leg))
+        {
+            m_LegsWithoutPosition.Add(leg);
+        }
+    }
+
     public bool IsPlayerAtMaxDistance()
     {
         return Vector3.Distance(transform.position, m_RestPosition.position) >= m_CrawlerSettings.MaxSpringStretch;
+    }
+
+    public bool IsPlayerAtMaxStretchDistance()
+    {
+        return Vector3.Distance(transform.position, m_RestPosition.position) >= m_CrawlerSettings.MaxStretchDistance;
     }
 
     private bool GetLegHits(Vector2 orientation)
@@ -359,6 +419,9 @@ public class PlayerMotor : MonoBehaviour
                 hitFound = true;
             }
         }
+
+
+        
 
         return hitFound;
     }

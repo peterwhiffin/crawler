@@ -31,12 +31,12 @@ public class PlayerStretchState : PlayerGroundedState
         }
 
         m_Player.Motor.SetRestPosition();
-        
-        if(m_InputHandler.MoveInput != Vector2.zero)
-        {         
+
+        if (m_InputHandler.MoveInput != Vector2.zero)
+        {
             m_Player.Motor.CheckCurrentLeg();
-            
-        }      
+
+        }
 
         if (m_Player.Hotbar.IsAttacking || m_InputHandler.MoveInput != Vector2.zero)
         {
@@ -46,7 +46,7 @@ public class PlayerStretchState : PlayerGroundedState
         else
         {
             m_Player.LookAtStretchDirection();
-        
+
         }
 
         if (!m_InputHandler.StretchInput)
@@ -55,18 +55,20 @@ public class PlayerStretchState : PlayerGroundedState
             {
                 m_IsLaunchQueued = true;
             }
-            else if(!m_IsLaunchQueued)
+            else if (!m_IsLaunchQueued)
             {
                 m_StateMachine.ChangeState(m_Player.IdleState);
             }
         }
-        
 
         if (m_HasLaunched)
         {
             m_StateMachine.ChangeState(m_Player.FallingState);
         }
-
+        else if (m_Player.Motor.IsGrappled)
+        {
+            m_StateMachine.ChangeState(m_Player.GrappleState);
+        }
     }
 
     public override void FixedUpdate()
@@ -99,7 +101,7 @@ public class PlayerStretchState : PlayerGroundedState
                     finalForce += m_Player.Motor.GetStretchMoveForce();
                 }
 
-                if (m_Player.Motor.IsPlayerAtMaxDistance())
+                if (m_Player.Motor.IsPlayerAtMaxStretchDistance())
                 {
                     finalForce += m_Player.Motor.RestrainToRestPosition();
                 }

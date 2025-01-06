@@ -67,22 +67,15 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   <StepHeight>k__BackingField: 0.74
-  <RopeOffset>k__BackingField: 0
-  <MaxLegTime>k__BackingField: 0.11
-  <LaunchForce>k__BackingField: 21.6
-  <LaunchTime>k__BackingField: 0.35
+  <LaunchForce>k__BackingField: 40.6
   <LaunchThreshold>k__BackingField: 0.39
-  <LegLaunchSpringStrength>k__BackingField: 121.1
-  <LegLaunchDamperStrength>k__BackingField: 1.34
+  <LegLaunchSpringStrength>k__BackingField: 128.5
+  <LegLaunchDamperStrength>k__BackingField: 0
   <LaunchHitVelocityThreshold>k__BackingField: 9.89
-  <LegAngularDampStrength>k__BackingField: 0
-  <LookRotationThreshold>k__BackingField: 0
-  <SlingShotMouseThreshold>k__BackingField: 20
   <CrosshairLookThreshold>k__BackingField: 0.17
-  <CollisionResetTime>k__BackingField: 2.02
   <MaxCollisionAngle>k__BackingField: 2.3
   <LegSearchMultiplier>k__BackingField: 0.91
-  <MaxHealth>k__BackingField: 300
+  <MaxHealth>k__BackingField: 30000
   <FootStepClips>k__BackingField:
   - {fileID: 8300000, guid: a1c0c64bdf64f99419ba7c5329c1a63a, type: 3}
   - {fileID: 8300000, guid: 64f41a12c92e82a4eb303e5daafc82f7, type: 3}
@@ -92,11 +85,13 @@ MonoBehaviour:
   <FootStepRate>k__BackingField: 0.6
   <CameraSmoothRate>k__BackingField: 3.87
   <MaxCameraDistance>k__BackingField: 6.73
-  <StretchCameraDistance>k__BackingField: 36.7
-  <PlayerVelocityCameraThreshold>k__BackingField: 3.18
-  <MouseSensitivity>k__BackingField: 0.002
-  <CrosshairThreshold>k__BackingField: 4.09
   <CrosshairCameraRange>k__BackingField: {x: 3.75, y: 21.68}
   <MaxCameraSpeed>k__BackingField: 0.24
   <MaxGraphicLocalStretch>k__BackingField: 0.1
   <LocalStretchLerp>k__BackingField: 1
+  <JumpForce>k__BackingField: 10
+  <LegLaunchRestDistance>k__BackingField: 0.1
+  <LegLinearDamping>k__BackingField: 10
+  <InAirMoveSpeed>k__BackingField: 3
+  <MaxStretchDistance>k__BackingField: 1
+  <GrappleForce>k__BackingField: 20

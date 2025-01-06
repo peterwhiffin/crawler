@@ -61,15 +61,12 @@ public class Leg : MonoBehaviour
             return;
         }
 
-
         m_FootStepPlayed = false;
         float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
         Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
         transform.position = Vector3.Lerp(transform.position, target, time);
 
-        
-
-            m_TimeElapsed += Time.deltaTime;
+        m_TimeElapsed += Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -89,9 +86,9 @@ public class Leg : MonoBehaviour
     private Vector2 GetSpringForce()
     {
         Vector2 direction = m_RigidBody.position - (Vector2)m_Player.transform.position;
-        float offset = m_CrawlerSettings.LegReach - direction.magnitude;
-        float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
-        float force = (offset * m_CrawlerSettings.LegLaunchSpringStrength) - (velocity * m_CrawlerSettings.LegLaunchDamperStrength);
+        float offset = m_CrawlerSettings.LegLaunchRestDistance - direction.magnitude;
+        float velocity = Vector2.Dot(direction.normalized, m_RigidBody.GetPointVelocity(m_RigidBody.position));
+        float force = (offset * m_CrawlerSettings.LegLaunchSpringStrength) + (velocity * m_CrawlerSettings.LegLaunchDamperStrength);
         return direction.normalized * force;
     }
 
@@ -100,6 +97,7 @@ public class Leg : MonoBehaviour
         m_IsFalling = true;
         m_RigidBody.bodyType = RigidbodyType2D.Dynamic;
         m_RigidBody.constraints = RigidbodyConstraints2D.None;
+        m_RigidBody.linearDamping = m_CrawlerSettings.LegLinearDamping;
         m_NeedNewPosition = true;
         m_TimeElapsed = 0f;
     }

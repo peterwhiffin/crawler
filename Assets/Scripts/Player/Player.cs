@@ -18,7 +18,10 @@ public class Player : MonoBehaviour
     public PlayerIdleState IdleState { get; private set; }
     public PlayerCrawlState CrawlState { get; private set; }
     public PlayerStretchState StretchState { get; private set; }
+    public PlayerJumpState JumpState { get; private set; }
     public PlayerFallingState FallingState { get; private set; }
+    public PlayerGrappleState GrappleState { get; private set; }
+
     [field: SerializeField] public HotBar Hotbar { get; private set; }
     [field: SerializeField] public PlayerMotor Motor { get; private set; }
     [field: SerializeField] public PlayerAnimation Animation { get; private set; }
@@ -45,7 +48,11 @@ public class Player : MonoBehaviour
         CrawlState = new(m_StateMachine, this, m_InputHandler);
         StretchState = new(m_StateMachine, this, m_InputHandler);
         FallingState = new(m_StateMachine, this, m_InputHandler);
+        JumpState = new(m_StateMachine, this, m_InputHandler);
+        GrappleState = new(m_StateMachine, this, m_InputHandler);
+
         m_StateMachine.Initialize(IdleState);
+
         OnUpdate += On_Update;
         OnFixedUpdate += On_Fixed_Update;
         OnLateUpdate += On_Late_Update;

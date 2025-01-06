@@ -24,7 +24,7 @@ public class Gun : Equipment
         m_AudioSource.clip = m_Settings.FireSound;
     }
 
-    public override void StartPrimaryAttack()
+    public override bool StartPrimaryAttack()
     {
         if(CheckFireRate())
         {
@@ -50,6 +50,8 @@ public class Gun : Equipment
                 }
             }           
         }
+
+        return base.StartPrimaryAttack();
     }
 
     private bool CheckFireRate()

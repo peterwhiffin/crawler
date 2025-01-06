@@ -24,6 +24,7 @@ public class PlayerFallingState : PlayerInAirState
     public override void Update()
     {
         base.Update();
+        m_Player.Motor.CheckLegsInAir();
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
         m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
@@ -40,11 +41,27 @@ public class PlayerFallingState : PlayerInAirState
 
         //}
 
-        if (m_Player.Motor.CanPlayerLand(m_TimeEntered))
+        //if (m_Player.Motor.CanPlayerLand(m_TimeEntered))
+        //{
+        //    m_Player.Motor.CheckLegsWithoutPosition();
+        //    m_Player.Motor.CheckCurrentLeg();
+
+        //    if (m_Player.Motor.EnoughLegsToWalk())
+        //    {
+        //        m_StateMachine.ChangeState(m_Player.IdleState);
+        //    }
+
+        //}
+        if (m_Player.Motor.IsGrappled)
+        {
+            m_StateMachine.ChangeState(m_Player.GrappleState);
+        }
+        else if (!m_InputHandler.JumpInput)
         {
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
 
+            
             if (m_Player.Motor.EnoughLegsToWalk())
             {
                 m_StateMachine.ChangeState(m_Player.IdleState);
@@ -56,6 +73,17 @@ public class PlayerFallingState : PlayerInAirState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
+        Vector2 finalForce = Vector2.zero;
+
+        if(m_InputHandler.MoveInput != Vector2.zero)
+        {
+            var direction = (Vector2.right * m_InputHandler.MoveInput.x);
+            direction = direction.normalized;
+
+            finalForce += direction * m_Player.CrawlerSettings.InAirMoveSpeed;
+        }
+
+        m_Player.Motor.MovePlayer(finalForce);
     }
 
     public override void LateUpdate()
