@@ -14,6 +14,7 @@ public class PlayerJumpState : PlayerAbilityState
     public override void Exit()
     {
         base.Exit();
+        m_InputHandler.JumpInput = false;
     }
 
     public override void FixedUpdate()

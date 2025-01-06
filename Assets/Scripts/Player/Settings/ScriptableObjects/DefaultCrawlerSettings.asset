@@ -16,7 +16,7 @@ MonoBehaviour:
   <MinimumLegMoveDistance>k__BackingField: 0.46
   <LegMoveRate>k__BackingField: 0.14
   <LegMoveThreshold>k__BackingField: 0.56
-  <LegReach>k__BackingField: 1.39
+  <LegReach>k__BackingField: 1.47
   <SpringForce>k__BackingField: 163.9
   <DampForce>k__BackingField: 0.5
   <MaxSpringStretch>k__BackingField: 0.91

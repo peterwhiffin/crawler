@@ -7,12 +7,14 @@ public class PlayerFallingState : PlayerInAirState
     }
 
     private float m_TimeEntered;
+    private bool m_Land = false;
 
     public override void Enter()
     {
         base.Enter();
         m_TimeEntered = Time.time;
         m_Player.Motor.PlayerInAir();
+        m_Land = false;
     }
 
     public override void Exit()
@@ -52,11 +54,18 @@ public class PlayerFallingState : PlayerInAirState
         //    }
 
         //}
+
+        if (m_InputHandler.JumpInput)
+        {
+            m_Land = true;
+        }
+
+
         if (m_Player.Motor.IsGrappled)
         {
             m_StateMachine.ChangeState(m_Player.GrappleState);
         }
-        else if (!m_InputHandler.JumpInput)
+        else if (m_Land)
         {
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
