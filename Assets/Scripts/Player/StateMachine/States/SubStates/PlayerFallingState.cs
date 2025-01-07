@@ -55,9 +55,10 @@ public class PlayerFallingState : PlayerInAirState
 
         //}
 
-        if (m_InputHandler.JumpInput)
+        if (!m_InputHandler.JumpInput)
         {
             m_Land = true;
+            //m_InputHandler.JumpInput = false;
         }
 
 
@@ -65,7 +66,7 @@ public class PlayerFallingState : PlayerInAirState
         {
             m_StateMachine.ChangeState(m_Player.GrappleState);
         }
-        else if (m_Land)
+        else if (m_Land && m_Player.Motor.CanPlayerLand(m_TimeEntered))
         {
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
@@ -98,5 +99,6 @@ public class PlayerFallingState : PlayerInAirState
     public override void LateUpdate()
     {
         base.LateUpdate();
+
     }
 }

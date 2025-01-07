@@ -25,6 +25,12 @@ public class Projectile : MonoBehaviour
     private void Update()
     {
         Move();
+        CheckHit();
+    }
+
+    private void CheckHit()
+    {
+
     }
 
     private void Move()

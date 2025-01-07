@@ -1,8 +1,10 @@
 using UnityEngine;
+using System;
 
 public class StateMachine
 {
     public State CurrentState {  get; private set; }
+    public Action StateChanged = delegate { };
 
     public void Initialize(State startingState)
     {
@@ -15,5 +17,6 @@ public class StateMachine
         CurrentState.Exit();
         CurrentState = newState;
         CurrentState.Enter();
+        StateChanged.Invoke();
     }
 }

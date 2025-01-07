@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Enemy: {fileID: 7094747583190808964}
+  m_GrappledLayer: 12
 --- !u!114 &8733623679340684799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbcaa9f5b6afa484694f6eaec963be56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanReelIn: 1
 --- !u!1 &3766152074593391016
 GameObject:
   m_ObjectHideFlags: 0

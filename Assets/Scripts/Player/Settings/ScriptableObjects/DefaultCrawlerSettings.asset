@@ -95,3 +95,4 @@ MonoBehaviour:
   <InAirMoveSpeed>k__BackingField: 3
   <MaxStretchDistance>k__BackingField: 1
   <GrappleForce>k__BackingField: 20
+  <LaunchTimeout>k__BackingField: 0.2

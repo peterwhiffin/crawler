@@ -25,7 +25,8 @@ public class PlayerMotor : MonoBehaviour
 
     public bool IsGrappled = false;
     public Vector2 GrapplePosition;
-
+    private float m_LaunchTimer;
+    private float m_GrappleForceMod;
     public Rigidbody2D Rigidbody {  get { return m_RigidBody; } }
     private void Awake()
     {
@@ -45,13 +46,14 @@ public class PlayerMotor : MonoBehaviour
     public Vector2 GetGrappleForce()
     {
         IsGrappled = false;
-        return m_CrawlerSettings.GrappleForce * (GrapplePosition - (Vector2)transform.position).normalized;
+        return m_CrawlerSettings.GrappleForce * m_GrappleForceMod * (GrapplePosition - (Vector2)transform.position).normalized;
     }
 
-    public void HookGrapple(Vector2 position)
+    public void HookGrapple(Vector2 position, float forceMod)
     {
         IsGrappled = true;
         GrapplePosition = position;
+        m_GrappleForceMod = forceMod;
     }
 
     public void EndLaunch()
@@ -97,8 +99,19 @@ public class PlayerMotor : MonoBehaviour
         m_ShouldStopFlying = false;
     }
 
+    public void SetLaunchTimer()
+    {
+        m_LaunchTimer = m_CrawlerSettings.LaunchTimeout;
+    }
+
     public bool CanPlayerLand(float timeStartedFalling)
     {
+        if(Time.time - timeStartedFalling > m_LaunchTimer)
+        {
+            m_LaunchTimer = 0f;
+            return true;
+        }
+
         bool canLand = false;
 
         if(m_ShouldStopFlying || m_RigidBody.linearVelocity.magnitude < m_CrawlerSettings.LaunchHitVelocityThreshold)

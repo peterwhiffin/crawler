@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class Player : MonoBehaviour
     public Action OnLateUpdate = delegate { };
 
     public Transform m_SpawnPosition;
-
+    public TMP_Text m_CurrentStateText;
 
     private void Start()
     {
@@ -58,6 +59,12 @@ public class Player : MonoBehaviour
         OnLateUpdate += On_Late_Update;
         Stats.Died += OnPlayerDied;
         m_Crosshair.position = transform.position;
+        m_StateMachine.StateChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        m_CurrentStateText.text = m_StateMachine.CurrentState.ToString();
     }
 
     private void OnDestroy()
@@ -65,6 +72,7 @@ public class Player : MonoBehaviour
         OnUpdate -= On_Update;
         OnFixedUpdate -= On_Fixed_Update;
         OnLateUpdate -= On_Late_Update;
+        m_StateMachine.StateChanged -= OnStateChanged;
     }
 
     private void On_Update()

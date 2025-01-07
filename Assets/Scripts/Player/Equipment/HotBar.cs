@@ -79,8 +79,8 @@ public class HotBar : MonoBehaviour
         m_SelectedEquipment.CancelPrimaryAttack();
     }
 
-    private void OnGrappleHit(Vector2 position)
+    private void OnGrappleHit(Vector2 position, float forceMod)
     {
-        m_Player.Motor.HookGrapple(position);
+        m_Player.Motor.HookGrapple(position, forceMod);
     }
 }

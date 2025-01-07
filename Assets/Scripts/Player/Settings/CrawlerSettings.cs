@@ -41,4 +41,5 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float InAirMoveSpeed { get; private set; }
     [field: SerializeField] public float MaxStretchDistance { get; private set; }
     [field: SerializeField] public float GrappleForce { get; private set; }
+    [field: SerializeField] public float LaunchTimeout { get; private set; }
 }
