@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bed16112b2a7047905e911ecf67638, type: 3}
   m_Name: DefaultCrawlerSettings
   m_EditorClassIdentifier: 
-  <MoveSpeed>k__BackingField: 50.5
+  <MoveSpeed>k__BackingField: 50
   <MinimumLegMoveDistance>k__BackingField: 0.46
   <LegMoveRate>k__BackingField: 0.14
   <LegMoveThreshold>k__BackingField: 0.56
-  <LegReach>k__BackingField: 1.47
+  <LegReach>k__BackingField: 0.66
   <SpringForce>k__BackingField: 163.9
   <DampForce>k__BackingField: 0.5
   <MaxSpringStretch>k__BackingField: 0.91
-  <WallSuspensionDistance>k__BackingField: 1.13
-  <WallSuspensionSpringStrength>k__BackingField: 156.2
-  <WallSuspensionDamperStrength>k__BackingField: 1
-  <MaxLegDistance>k__BackingField: 2.14
+  <WallSuspensionDistance>k__BackingField: 0.83
+  <WallSuspensionSpringStrength>k__BackingField: 139.2
+  <WallSuspensionDamperStrength>k__BackingField: 0.18
+  <MaxLegDistance>k__BackingField: 2.7
   <StepCurve>k__BackingField:
     serializedVersion: 2
     m_Curve:
@@ -46,28 +46,28 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.089306116
     - serializedVersion: 3
-      time: 0.6276766
-      value: 0.05629711
-      inSlope: -2.6817021
-      outSlope: -2.6817021
+      time: 0.6306063
+      value: 0.00701122
+      inSlope: -0.330093
+      outSlope: -0.330093
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.07992444
+      outWeight: 0.1633913
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 1.3671862
-      outSlope: 1.3671862
+      inSlope: -0.2935173
+      outSlope: -0.2935173
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.053675584
+      inWeight: 0.20750654
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   <StepHeight>k__BackingField: 0.74
-  <LaunchForce>k__BackingField: 40.6
+  <LaunchForce>k__BackingField: 20.2
   <LaunchThreshold>k__BackingField: 0.39
   <LegLaunchSpringStrength>k__BackingField: 128.5
   <LegLaunchDamperStrength>k__BackingField: 0
@@ -96,3 +96,54 @@ MonoBehaviour:
   <MaxStretchDistance>k__BackingField: 1
   <GrappleForce>k__BackingField: 20
   <LaunchTimeout>k__BackingField: 0.2
+  <LegMoveRateCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2180596
+      value: 1
+      inSlope: -0.00863767
+      outSlope: -0.00863767
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.14
+      inSlope: -0.0036773365
+      outSlope: -0.0036773365
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3509199
+    - serializedVersion: 3
+      time: 98.235
+      value: 0.016735211
+      inSlope: -0.00009300043
+      outSlope: -0.00009300043
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.31751224
+      outWeight: 0.20364034
+    - serializedVersion: 3
+      time: 500
+      value: 0.001
+      inSlope: -0.00003916521
+      outSlope: 0
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

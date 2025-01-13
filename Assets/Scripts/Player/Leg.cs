@@ -14,7 +14,7 @@ public class Leg : MonoBehaviour
     [SerializeField] private Player m_Player;
     [SerializeField] private Transform m_TargetPosition;
     [SerializeField] private Vector2 m_Orientation;
-    [SerializeField] private CrawlerSettings m_CrawlerSettings;
+    //[SerializeField] private CrawlerSettings m_CrawlerSettings;
     [SerializeField] private LineRenderer m_LineRenderer;
     [SerializeField] private Rigidbody2D m_RigidBody;
     [SerializeField] private int m_RopeResolution;
@@ -46,13 +46,13 @@ public class Leg : MonoBehaviour
         {
             return;
         }
-
-        if (m_TimeElapsed > m_CrawlerSettings.LegMoveRate)
+        float legMoveRate = m_Player.CrawlerSettings.LegMoveRateCurve.Evaluate(m_Player.CrawlerSettings.MoveSpeed);
+        if (m_TimeElapsed > legMoveRate)
         {
-            if (!m_FootStepPlayed && Time.time - m_LastFootStepTime > m_CrawlerSettings.FootStepRate)
+            if (!m_FootStepPlayed && Time.time - m_LastFootStepTime > m_Player.CrawlerSettings.FootStepRate)
             {
-                int randomIndex = UnityEngine.Random.Range(0, m_CrawlerSettings.FootStepClips.Count);
-                m_AudioSource.PlayOneShot(m_CrawlerSettings.FootStepClips[randomIndex]);
+                int randomIndex = UnityEngine.Random.Range(0, m_Player.CrawlerSettings.FootStepClips.Count);
+                m_AudioSource.PlayOneShot(m_Player.CrawlerSettings.FootStepClips[randomIndex]);
                 m_FootStepPlayed = true;
                 m_LastFootStepTime = Time.time;
             }
@@ -62,8 +62,11 @@ public class Leg : MonoBehaviour
         }
 
         m_FootStepPlayed = false;
-        float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
-        Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_CrawlerSettings.StepHeight * m_CrawlerSettings.StepCurve.Evaluate(time);
+        
+
+        //float time = m_TimeElapsed / m_CrawlerSettings.LegMoveRate;
+        float time = m_TimeElapsed / legMoveRate;
+        Vector3 target = m_TargetPosition.position + m_TargetPosition.up * m_Player.CrawlerSettings.StepHeight * m_Player.CrawlerSettings.StepCurve.Evaluate(time);
         transform.position = Vector3.Lerp(transform.position, target, time);
 
         m_TimeElapsed += Time.deltaTime;
@@ -86,9 +89,9 @@ public class Leg : MonoBehaviour
     private Vector2 GetSpringForce()
     {
         Vector2 direction = m_RigidBody.position - (Vector2)m_Player.transform.position;
-        float offset = m_CrawlerSettings.LegLaunchRestDistance - direction.magnitude;
+        float offset = m_Player.CrawlerSettings.LegLaunchRestDistance - direction.magnitude;
         float velocity = Vector2.Dot(direction.normalized, m_RigidBody.GetPointVelocity(m_RigidBody.position));
-        float force = (offset * m_CrawlerSettings.LegLaunchSpringStrength) + (velocity * m_CrawlerSettings.LegLaunchDamperStrength);
+        float force = (offset * m_Player.CrawlerSettings.LegLaunchSpringStrength) + (velocity * m_Player.CrawlerSettings.LegLaunchDamperStrength);
         return direction.normalized * force;
     }
 
@@ -97,7 +100,7 @@ public class Leg : MonoBehaviour
         m_IsFalling = true;
         m_RigidBody.bodyType = RigidbodyType2D.Dynamic;
         m_RigidBody.constraints = RigidbodyConstraints2D.None;
-        m_RigidBody.linearDamping = m_CrawlerSettings.LegLinearDamping;
+        m_RigidBody.linearDamping = m_Player.CrawlerSettings.LegLinearDamping;
         m_NeedNewPosition = true;
         m_TimeElapsed = 0f;
     }
@@ -115,30 +118,12 @@ public class Leg : MonoBehaviour
 
     public bool IsDoneMoving()
     {
-        return m_TimeElapsed > m_CrawlerSettings.LegMoveRate;
+        float legMoveRate = m_Player.CrawlerSettings.LegMoveRateCurve.Evaluate(m_Player.CrawlerSettings.MoveSpeed);
+        return m_TimeElapsed > legMoveRate;
     }
 
     public void SnapPosition(Vector3 position)
     {
         transform.position = position;
-    }
-
-    private void LateUpdate()
-    {
-        DisplayRope();
-    }
-
-    private void DisplayRope()
-    {
-        float ropeWidth = 0.1f;
-
-        m_LineRenderer.startWidth = ropeWidth;
-        m_LineRenderer.endWidth = ropeWidth;
-
-        m_RopePositions[0] =  transform.position;
-        m_RopePositions[1] = m_RopeTarget.position;
-
-        m_LineRenderer.positionCount = 2;
-        m_LineRenderer.SetPositions(m_RopePositions);
     }
 }

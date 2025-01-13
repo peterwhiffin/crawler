@@ -48,6 +48,7 @@ public class PlayerCrawlState : PlayerGroundedState
 
         Vector2 finalForce = Vector2.zero;
         finalForce += m_Player.Motor.GetMoveForce(m_InputHandler.MoveInput);
+        finalForce += m_Player.Motor.FloatOffTerrain();
 
         if (m_Player.Motor.IsPlayerAtMaxDistance())
         {

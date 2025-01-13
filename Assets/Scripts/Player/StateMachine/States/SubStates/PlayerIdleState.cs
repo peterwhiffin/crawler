@@ -29,7 +29,7 @@ public class PlayerIdleState : PlayerGroundedState
         }
         else if (m_Player.Motor.HasPlayerHitMoveThreshold())
         {
-            m_Player.Motor.CheckCurrentLeg();
+            //m_Player.Motor.CheckCurrentLeg();
         }
         
 
@@ -58,8 +58,12 @@ public class PlayerIdleState : PlayerGroundedState
     {
         base.FixedUpdate();
 
-        Vector2 finalForce = m_Player.Motor.RestrainToRestPosition();
-        finalForce += m_Player.Motor.FloatOffTerrain();
+        Vector2 finalForce = m_Player.Motor.FloatOffTerrain();
+
+        if (m_Player.Motor.IsPlayerAtMaxDistance())
+        {
+            finalForce += m_Player.Motor.RestrainToRestPosition();
+        }
 
         m_Player.Motor.MovePlayer(finalForce);
     }

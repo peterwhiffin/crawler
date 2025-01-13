@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82bed16112b2a7047905e911ecf67638, type: 3}
+  m_Name: test
+  m_EditorClassIdentifier: 
+  <MoveSpeed>k__BackingField: 179.8
+  <MinimumLegMoveDistance>k__BackingField: 0.6
+  <LegMoveRate>k__BackingField: 0.14
+  <LegMoveThreshold>k__BackingField: 0.38
+  <LegReach>k__BackingField: 0.87
+  <SpringForce>k__BackingField: 163.9
+  <DampForce>k__BackingField: 0.5
+  <MaxSpringStretch>k__BackingField: 0.91
+  <WallSuspensionDistance>k__BackingField: 0.83
+  <WallSuspensionSpringStrength>k__BackingField: 139.2
+  <WallSuspensionDamperStrength>k__BackingField: 86.38
+  <MaxLegDistance>k__BackingField: 2.3
+  <StepCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.04921821
+      outSlope: -0.04921821
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.18525584
+      value: 0.99088204
+      inSlope: -0.20568135
+      outSlope: -0.20568135
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.089306116
+    - serializedVersion: 3
+      time: 0.6306063
+      value: 0.00701122
+      inSlope: -0.330093
+      outSlope: -0.330093
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1633913
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.2935173
+      outSlope: -0.2935173
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.20750654
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  <StepHeight>k__BackingField: 0.74
+  <LaunchForce>k__BackingField: 20.2
+  <LaunchThreshold>k__BackingField: 0.39
+  <LegLaunchSpringStrength>k__BackingField: 128.5
+  <LegLaunchDamperStrength>k__BackingField: 0
+  <LaunchHitVelocityThreshold>k__BackingField: 9.89
+  <CrosshairLookThreshold>k__BackingField: 0.17
+  <MaxCollisionAngle>k__BackingField: 2.3
+  <LegSearchMultiplier>k__BackingField: 1.9
+  <MaxHealth>k__BackingField: 30000
+  <FootStepClips>k__BackingField:
+  - {fileID: 8300000, guid: a1c0c64bdf64f99419ba7c5329c1a63a, type: 3}
+  - {fileID: 8300000, guid: 64f41a12c92e82a4eb303e5daafc82f7, type: 3}
+  - {fileID: 8300000, guid: 9621c2af7e754394a918f34fa7dca26e, type: 3}
+  - {fileID: 8300000, guid: 012c0df2e260d5d4590beaca9c1a37ff, type: 3}
+  - {fileID: 8300000, guid: 73a6493412b0e5c418b9dcd33753e5c4, type: 3}
+  <FootStepRate>k__BackingField: 0.6
+  <CameraSmoothRate>k__BackingField: 3.87
+  <MaxCameraDistance>k__BackingField: 6.73
+  <CrosshairCameraRange>k__BackingField: {x: 3.75, y: 21.68}
+  <MaxCameraSpeed>k__BackingField: 0.24
+  <MaxGraphicLocalStretch>k__BackingField: 0.1
+  <LocalStretchLerp>k__BackingField: 1
+  <JumpForce>k__BackingField: 10
+  <LegLaunchRestDistance>k__BackingField: 0.1
+  <LegLinearDamping>k__BackingField: 10
+  <InAirMoveSpeed>k__BackingField: 3
+  <MaxStretchDistance>k__BackingField: 1
+  <GrappleForce>k__BackingField: 20
+  <LaunchTimeout>k__BackingField: 0.2
+  <LegMoveRateCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2180596
+      value: 1
+      inSlope: -0.00863767
+      outSlope: -0.00863767
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.14
+      inSlope: -0.0036773365
+      outSlope: -0.0036773365
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3509199
+    - serializedVersion: 3
+      time: 69.08049
+      value: 0.10154356
+      inSlope: -0.00009300043
+      outSlope: -0.00009300043
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.31751224
+      outWeight: 0.20364034
+    - serializedVersion: 3
+      time: 500
+      value: 0.001
+      inSlope: -0.0002333233
+      outSlope: 0
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

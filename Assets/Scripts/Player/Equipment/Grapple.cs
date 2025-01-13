@@ -28,7 +28,7 @@ public class Grapple : Equipment
 
     private void Update()
     {
-        DisplayRope();
+        //DisplayRope();
 
     }
 
@@ -56,7 +56,7 @@ public class Grapple : Equipment
             StopCoroutine(ReelRoutine);
         }
 
-        StartCoroutine(ReelInObject(grappleable));
+       ReelRoutine = StartCoroutine(ReelInObject(grappleable));
     }
 
     public void ReelPlayerIn(Vector2 position)
@@ -71,7 +71,7 @@ public class Grapple : Equipment
             StopCoroutine(ReelRoutine);
         }
 
-        StartCoroutine(ReelInProjectile());
+        ReelRoutine = StartCoroutine(ReelInProjectile());
         //m_IsActive = false;
         //m_LineRenderer.enabled = false;
         //m_Projectile.gameObject.SetActive(false);
@@ -84,7 +84,7 @@ public class Grapple : Equipment
             StopCoroutine(ReelRoutine);
         }
 
-        StartCoroutine(ReelInProjectile());
+        ReelRoutine = StartCoroutine(ReelInProjectile());
     }
 
     private IEnumerator ReelInProjectile()
@@ -120,21 +120,6 @@ public class Grapple : Equipment
         m_Projectile.gameObject.SetActive(false);
         m_IsReeling = false;
         m_IsActive = false;
-    }
-
-    private void DisplayRope()
-    {
-        if(!m_IsActive) return;
-
-        float ropeWidth = 0.05f;
-
-        m_LineRenderer.startWidth = ropeWidth;
-        m_LineRenderer.endWidth = ropeWidth;
-
-        m_RopePositions[0] = transform.position;
-        m_RopePositions[1] = m_RopeTarget.position;
-
-        m_LineRenderer.positionCount = 2;
-        m_LineRenderer.SetPositions(m_RopePositions);
+        m_LineRenderer.enabled = false;
     }
 }

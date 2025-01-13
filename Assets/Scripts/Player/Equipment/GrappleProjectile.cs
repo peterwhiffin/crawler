@@ -33,6 +33,9 @@ public class GrappleProjectile : MonoBehaviour
             return;
 
         CheckHit();
+
+        
+
         Move();
     }
 
@@ -80,11 +83,14 @@ public class GrappleProjectile : MonoBehaviour
 
     private void Move()
     {
+
+
         m_PreviousPosition = transform.position;
         transform.position += transform.up * m_Speed * Time.deltaTime;
 
         if(TravelDistance >= m_MaxDistance)
         {
+            m_hasFired = false;
             m_Grapple.ProjectileMissed();
         }
 

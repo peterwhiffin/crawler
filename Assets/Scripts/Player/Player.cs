@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
-        Physics2D.queriesStartInColliders = false;
+        Physics2D.queriesStartInColliders = true;
         
         m_StateMachine = new();
         IdleState = new(m_StateMachine, this, m_InputHandler);
@@ -60,6 +60,7 @@ public class Player : MonoBehaviour
         Stats.Died += OnPlayerDied;
         m_Crosshair.position = transform.position;
         m_StateMachine.StateChanged += OnStateChanged;
+        Motor.Initialize();
     }
 
     private void OnStateChanged()
@@ -161,6 +162,17 @@ public class Player : MonoBehaviour
         OnUpdate.Invoke();
         var cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
         m_Crosshair.position = Camera.main.ScreenToWorldPoint(cursorPosition);
+        var dot = Vector2.Dot(m_Crosshair.position - transform.position, transform.right);
+        Debug.Log("dot: " + dot);
+
+        if(dot < 0)
+        {
+            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 
     private void FixedUpdate()
