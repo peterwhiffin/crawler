@@ -86,7 +86,7 @@ public class GrappleProjectile : MonoBehaviour
 
 
         m_PreviousPosition = transform.position;
-        transform.position += transform.up * m_Speed * Time.deltaTime;
+        transform.position += transform.right * m_Speed * Time.deltaTime;
 
         if(TravelDistance >= m_MaxDistance)
         {

@@ -167,11 +167,11 @@ public class Player : MonoBehaviour
 
         if(dot < 0)
         {
-            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipX = true;
+            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipY = true;
         }
         else
         {
-            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipX = false;
+            m_PlayerGraphic.GetComponent<SpriteRenderer>().flipY = false;
         }
     }
 
@@ -185,7 +185,7 @@ public class Player : MonoBehaviour
         Vector2 lookTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
 
         if (Vector2.Distance(lookTarget, (Vector2)transform.position) > m_CrawlerSettings.CrosshairLookThreshold)
-            m_PlayerGraphic.up = lookTarget - (Vector2)transform.position;
+            m_PlayerGraphic.right = lookTarget - (Vector2)transform.position;
     }
 
     public void LookAtStretchDirection()
@@ -193,7 +193,7 @@ public class Player : MonoBehaviour
         Vector2 direction = ((Vector2)m_RestPosition.position - (Vector2)transform.position).normalized;
         Vector2 lookTarget2 = direction * 2f;
 
-        m_PlayerGraphic.up = lookTarget2;
+        m_PlayerGraphic.right = lookTarget2;
     }
 
     

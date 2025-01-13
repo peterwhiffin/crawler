@@ -68,7 +68,7 @@ public class Projectile : MonoBehaviour
         }
 
         m_PreviousPosition = transform.position;
-        transform.position += transform.up * m_Speed * Time.deltaTime;
+        transform.position += transform.right * m_Speed * Time.deltaTime;
         m_LifeTime += Time.deltaTime;
     }
 
