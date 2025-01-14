@@ -43,4 +43,11 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float GrappleForce { get; private set; }
     [field: SerializeField] public float LaunchTimeout { get; private set; }
     [field: SerializeField] public AnimationCurve LegMoveRateCurve { get; private set; }
+    [field: SerializeField] public float GrappleStretchDistance { get; private set; }
+    [field: SerializeField] public float GrappleInAirMoveSpeed { get; private set; }
+    [field: SerializeField] public float GrappleSpringStrength { get; private set; }
+    [field: SerializeField] public float GrappleDamperStrength { get; private set; }
+    [field: SerializeField] public float InAirLinearDamping { get; private set; }
+    [field: SerializeField] public float OnGroundLinearDamping { get; private set; }
+    [field: SerializeField] public float MaxInAirSpeed { get; private set; }
 }

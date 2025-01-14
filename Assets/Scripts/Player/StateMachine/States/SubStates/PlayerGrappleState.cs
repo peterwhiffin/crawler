@@ -24,6 +24,7 @@ public class PlayerGrappleState : PlayerAbilityState
         {
             m_Player.Motor.LaunchPlayer();
             m_Player.Motor.MovePlayer(m_Player.Motor.GetGrappleForce(), ForceMode2D.Impulse);
+            m_Player.Hotbar.ReelGrapple();
             m_IsAbilityDone = true;
         }
     }

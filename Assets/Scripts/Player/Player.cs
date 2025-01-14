@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     public PlayerFallingState FallingState { get; private set; }
     public PlayerGrappleState GrappleState { get; private set; }
 
+
     [field: SerializeField] public HotBar Hotbar { get; private set; }
     [field: SerializeField] public PlayerMotor Motor { get; private set; }
     [field: SerializeField] public PlayerAnimation Animation { get; private set; }
@@ -163,7 +164,7 @@ public class Player : MonoBehaviour
         var cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
         m_Crosshair.position = Camera.main.ScreenToWorldPoint(cursorPosition);
         var dot = Vector2.Dot(m_Crosshair.position - transform.position, transform.right);
-        Debug.Log("dot: " + dot);
+
 
         if(dot < 0)
         {

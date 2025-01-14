@@ -35,12 +35,8 @@ public class PlayerIdleState : PlayerGroundedState
 
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
-
-        if (m_Player.Motor.IsGrappled)
-        {
-            m_StateMachine.ChangeState(m_Player.GrappleState);
-        }
-        else if (m_InputHandler.StretchInput)
+        
+        if (m_InputHandler.StretchInput)
         {
             m_StateMachine.ChangeState(m_Player.StretchState);
         }
@@ -63,6 +59,11 @@ public class PlayerIdleState : PlayerGroundedState
         if (m_Player.Motor.IsPlayerAtMaxDistance())
         {
             finalForce += m_Player.Motor.RestrainToRestPosition();
+        }
+
+        if (m_Player.Motor.IsGrappled)
+        {
+            finalForce += m_Player.Motor.GetGrappleConstraint();
         }
 
         m_Player.Motor.MovePlayer(finalForce);

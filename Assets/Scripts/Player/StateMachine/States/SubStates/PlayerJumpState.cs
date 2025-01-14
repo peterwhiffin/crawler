@@ -25,11 +25,11 @@ public class PlayerJumpState : PlayerAbilityState
         {
             var direction = m_Player.Motor.GetJumpDirection();
 
-            if(m_InputHandler.MoveInput != Vector2.zero)
+            if (m_InputHandler.MoveInput != Vector2.zero)
             {
                 direction += (Vector2.up * m_InputHandler.MoveInput.y) + (Vector2.right * m_InputHandler.MoveInput.x);
 
-              
+
             }
 
             direction = direction.normalized;
@@ -37,7 +37,8 @@ public class PlayerJumpState : PlayerAbilityState
             m_Player.Motor.LaunchPlayer();
             m_Player.Motor.MovePlayer(direction * m_Player.CrawlerSettings.JumpForce, ForceMode2D.Impulse);
             m_IsAbilityDone = true;
-        }
+
+        } 
     }
 
     public override void LateUpdate()

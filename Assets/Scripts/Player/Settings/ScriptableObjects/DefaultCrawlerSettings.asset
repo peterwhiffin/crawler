@@ -147,3 +147,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  <GrappleStretchDistance>k__BackingField: 0.1
+  <GrappleInAirMoveSpeed>k__BackingField: 25
+  <GrappleSpringStrength>k__BackingField: 36.6
+  <GrappleDamperStrength>k__BackingField: 6.4
+  <InAirLinearDamping>k__BackingField: 0.1
+  <OnGroundLinearDamping>k__BackingField: 10
+  <MaxInAirSpeed>k__BackingField: 12

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class PlayerInAirState : PlayerState
+public class PlayerGrappledInAirState : PlayerInAirState
 {
-    public PlayerInAirState(StateMachine stateMachine, Player player, InputHandler inputHandler) : base(stateMachine, player, inputHandler)
+    public PlayerGrappledInAirState(StateMachine stateMachine, Player player, InputHandler inputHandler) : base(stateMachine, player, inputHandler)
     {
     }
 
@@ -16,20 +16,18 @@ public class PlayerInAirState : PlayerState
         base.Exit();
     }
 
-    public override void Update()
-    {
-        base.Update();
-    }
-
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-
-        m_Player.Motor.ClampInAirVelocity();
     }
 
     public override void LateUpdate()
     {
         base.LateUpdate();
+    }
+
+    public override void Update()
+    {
+        base.Update();
     }
 }

@@ -24,11 +24,7 @@ public class PlayerCrawlState : PlayerGroundedState
         m_Player.LookAtCursor();
         m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
 
-        if (m_Player.Motor.IsGrappled)
-        {
-            m_StateMachine.ChangeState(m_Player.GrappleState);
-        }
-        else if (m_InputHandler.StretchInput)
+        if (m_InputHandler.StretchInput)
         {
             m_StateMachine.ChangeState(m_Player.StretchState);
         }
@@ -53,6 +49,11 @@ public class PlayerCrawlState : PlayerGroundedState
         if (m_Player.Motor.IsPlayerAtMaxDistance())
         {
             finalForce += m_Player.Motor.RestrainToRestPosition();
+        }
+
+        if (m_Player.Motor.IsGrappled)
+        {
+            finalForce += m_Player.Motor.GetGrappleConstraint();
         }
 
         m_Player.Motor.MovePlayer(finalForce);

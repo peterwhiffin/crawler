@@ -377,13 +377,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ProjectileSpeed: 8.46
-  m_FireRate: 0.67
   m_Damage: 0.1
   m_ProjectilePrefab: {fileID: 2286319929783529499, guid: 8cd7bab1e66d43f4d9e0c6abdb8c21ff, type: 3}
   m_FirePosition: {fileID: 7476013599550913789}
   m_ProjectileRadius: 0.29
   m_Accuracy: 0
-  m_Settings: {fileID: 11400000, guid: a88034db2ff7b7b42ab9e981127eaf63, type: 2}
+  m_Settings: {fileID: 11400000, guid: 339cd7db7b0073d47b7be57dc8ed939f, type: 2}
   m_AudioSource: {fileID: 3529123446044971189}
 --- !u!1 &7594109807388632051
 GameObject:

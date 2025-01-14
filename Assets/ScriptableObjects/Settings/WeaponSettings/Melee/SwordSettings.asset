@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d8b05ac020472944a638539b4a8f882, type: 3}
+  m_Name: SwordSettings
+  m_EditorClassIdentifier: 
+  <FireRate>k__BackingField: 1
+  <Damage>k__BackingField: 150
+  <HitCheckRadius>k__BackingField: 0
+  <FireSound>k__BackingField: {fileID: 8300000, guid: ab297b593498a6e47ba84de770477cbe, type: 3}
+  <HitMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 832
+  <MinimumAudioTime>k__BackingField: 0
+  <IsAudioOneShot>k__BackingField: 1
+  <AttackDistance>k__BackingField: 3
+  <HitEffectPrefab>k__BackingField: {fileID: 5007869118803100165, guid: 422d6f32c799a314990b5ba444386416, type: 3}

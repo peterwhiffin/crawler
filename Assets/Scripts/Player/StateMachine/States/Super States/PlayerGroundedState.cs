@@ -9,6 +9,7 @@ public class PlayerGroundedState : PlayerState
     public override void Enter()
     {
         base.Enter();
+        m_Player.Motor.PlayerOnGround();
     }
 
     public override void Exit()

@@ -9,14 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22d47d58aeabd924c86fe6e7086b2255, type: 3}
-  m_Name: MachineGunWeapon
+  m_Script: {fileID: 11500000, guid: 8d5bc75ec23437c45954c96cc428b07b, type: 3}
+  m_Name: MachineGun
   m_EditorClassIdentifier: 
   <FireRate>k__BackingField: 0.09
   <Damage>k__BackingField: 50
-  <ProjectileSpeed>k__BackingField: 181
-  <ProjectileRadius>k__BackingField: 0
-  <Accuracy>k__BackingField: 3
-  <ProjectilePrefab>k__BackingField: {fileID: 2286319929783529499, guid: 1f699223b6bb10e4abf65bc63cadef2f, type: 3}
+  <HitCheckRadius>k__BackingField: 0
   <FireSound>k__BackingField: {fileID: 8300000, guid: 0583f043662859c4caa1392b228efc03, type: 3}
+  <HitMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 832
   <MinimumAudioTime>k__BackingField: 0.16
+  <IsAudioOneShot>k__BackingField: 0
+  <ProjectilePrefab>k__BackingField: {fileID: 2286319929783529499, guid: 1f699223b6bb10e4abf65bc63cadef2f, type: 3}
+  <ProjectileSpeed>k__BackingField: 180
+  <Accuracy>k__BackingField: 3

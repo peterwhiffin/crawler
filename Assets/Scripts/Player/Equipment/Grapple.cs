@@ -10,6 +10,7 @@ public class Grapple : Equipment
     public float m_GrappleDistance;
     public LayerMask m_HitMask;
     public Action<Vector2, float> GrappleHit = delegate { };
+    public event Action GrappleReleased = delegate { };
     public GrappleProjectile m_Projectile;
     public float m_Speed;
     public LineRenderer m_LineRenderer;
@@ -19,6 +20,7 @@ public class Grapple : Equipment
     public HitBox m_GrabbedObject;
     private Coroutine ReelRoutine;
     private bool m_IsReeling = false;
+    private bool m_IsGrappled = false;
 
     private void Start()
     {
@@ -26,16 +28,15 @@ public class Grapple : Equipment
         m_RopePositions = new Vector3[2];
     }
 
-    private void Update()
-    {
-        //DisplayRope();
-
-    }
-
     public override bool StartPrimaryAttack()
     {
         base.StartPrimaryAttack();
-        if (m_IsReeling) return false;
+        
+        if (m_IsGrappled)
+        {
+            ReelGrapple();
+            return false;
+        }
 
         m_Projectile.gameObject.SetActive(true);
         m_LineRenderer.enabled = true;
@@ -44,7 +45,17 @@ public class Grapple : Equipment
         return false;
     }
 
+    public void ReelGrapple()
+    {
+        m_IsGrappled = false;
+        GrappleReleased.Invoke();
+        if (ReelRoutine != null)
+        {
+            StopCoroutine(ReelRoutine);
+        }
 
+        ReelRoutine = StartCoroutine(ReelInProjectile());
+    }
 
     public void ReelObjectIn(Vector2 position, IGrappleable grappleable)
     {
@@ -63,18 +74,10 @@ public class Grapple : Equipment
     {
         GrappleHit.Invoke(position, 1f);
 
-        m_IsReeling = true;
+        m_IsGrappled = true;
 
 
-        if (ReelRoutine != null)
-        {
-            StopCoroutine(ReelRoutine);
-        }
-
-        ReelRoutine = StartCoroutine(ReelInProjectile());
-        //m_IsActive = false;
-        //m_LineRenderer.enabled = false;
-        //m_Projectile.gameObject.SetActive(false);
+        
     }
 
     public void ProjectileMissed()

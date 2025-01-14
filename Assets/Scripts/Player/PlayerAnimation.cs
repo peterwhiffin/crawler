@@ -60,6 +60,16 @@ public class PlayerAnimation : Animation
        m_FlashRoutine = StartCoroutine(HitFlash(flashColor, duration));
     }
 
+    public void PlaySwordAttack()
+    {
+        m_Animator.SetBool("Stab", true);
+    }
+
+    public void OnSwordAttackPlayed()
+    {
+        m_Animator.SetBool("Stab", false);
+    }
+
     private IEnumerator HitFlash(Color flashColor, float duration)
     {
         float time = Time.time;

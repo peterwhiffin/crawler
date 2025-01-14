@@ -66,10 +66,6 @@ public class PlayerStretchState : PlayerGroundedState
             m_Player.Motor.SetLaunchTimer();
             m_StateMachine.ChangeState(m_Player.FallingState);
         }
-        else if (m_Player.Motor.IsGrappled)
-        {
-            m_StateMachine.ChangeState(m_Player.GrappleState);
-        }
     }
 
     public override void FixedUpdate()

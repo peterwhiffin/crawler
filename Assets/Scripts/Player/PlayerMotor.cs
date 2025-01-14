@@ -29,6 +29,8 @@ public class PlayerMotor : MonoBehaviour
     private float m_GrappleForceMod;
     private int m_LegSearchCounter = 0;
     private bool m_StepTargetFound = false;
+    private float m_GrappleRopeDistance = 0f;
+
 
     public Rigidbody2D Rigidbody {  get { return m_RigidBody; } }
     private void Awake()
@@ -58,6 +60,24 @@ public class PlayerMotor : MonoBehaviour
         IsGrappled = true;
         GrapplePosition = position;
         m_GrappleForceMod = forceMod;
+        m_GrappleRopeDistance = Vector2.Distance(transform.position, position);
+    }
+
+    public Vector2 GetGrappleConstraint()
+    {
+        Vector2 finalForce = Vector2.zero;
+        Vector2 direction = (GrapplePosition - (Vector2)transform.position);
+
+        if (direction.magnitude < m_GrappleRopeDistance + m_Player.CrawlerSettings.GrappleStretchDistance)
+        {
+            return finalForce;
+        }
+
+        float offset = direction.magnitude - m_GrappleRopeDistance;
+        float velocity = Vector2.Dot(direction, m_RigidBody.linearVelocity);
+        float force = (offset * m_Player.CrawlerSettings.GrappleSpringStrength) - (velocity * m_Player.CrawlerSettings.GrappleDamperStrength);
+        finalForce += direction.normalized * force;
+        return finalForce;
     }
 
     public void EndLaunch()
@@ -98,9 +118,23 @@ public class PlayerMotor : MonoBehaviour
         return Vector2.Distance(mouseWorldPosition, (Vector2)transform.position) < m_Player.CrawlerSettings.CrosshairLookThreshold;
     }
 
+    public void ClampInAirVelocity()
+    {
+        if(m_RigidBody.linearVelocity.magnitude > m_Player.CrawlerSettings.MaxInAirSpeed)
+        {
+            m_RigidBody.linearVelocity = m_RigidBody.linearVelocity.normalized * m_Player.CrawlerSettings.MaxInAirSpeed;
+        }
+    }
+
     public void PlayerInAir()
     {
         m_ShouldStopFlying = false;
+        m_RigidBody.linearDamping = m_Player.CrawlerSettings.InAirLinearDamping;
+    }
+
+    public void PlayerOnGround()
+    {
+        m_RigidBody.linearDamping = m_Player.CrawlerSettings.OnGroundLinearDamping;
     }
 
     public void SetLaunchTimer()

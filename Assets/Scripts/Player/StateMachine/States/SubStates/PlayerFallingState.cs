@@ -62,17 +62,16 @@ public class PlayerFallingState : PlayerInAirState
         }
 
 
-        if (m_Player.Motor.IsGrappled)
-        {
-            m_StateMachine.ChangeState(m_Player.GrappleState);
-        }
-        else if (m_Land && m_Player.Motor.CanPlayerLand(m_TimeEntered))
+        if (m_Land && m_Player.Motor.CanPlayerLand(m_TimeEntered))
         {
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
 
-            
-            if (m_Player.Motor.EnoughLegsToWalk())
+            if (m_InputHandler.JumpInput && m_Player.Motor.IsGrappled)
+            {
+                m_StateMachine.ChangeState(m_Player.GrappleState);
+            }
+            else if (m_Player.Motor.EnoughLegsToWalk())
             {
                 m_StateMachine.ChangeState(m_Player.IdleState);
             }
@@ -85,13 +84,23 @@ public class PlayerFallingState : PlayerInAirState
         base.FixedUpdate();
         Vector2 finalForce = Vector2.zero;
 
-        if(m_InputHandler.MoveInput != Vector2.zero)
+        float moveSpeed = m_Player.CrawlerSettings.InAirMoveSpeed;
+
+        if (m_Player.Motor.IsGrappled)
+        {
+            finalForce += m_Player.Motor.GetGrappleConstraint();
+            moveSpeed = m_Player.CrawlerSettings.GrappleInAirMoveSpeed;
+        }
+
+        if (m_InputHandler.MoveInput != Vector2.zero)
         {
             var direction = (Vector2.right * m_InputHandler.MoveInput.x);
             direction = direction.normalized;
 
-            finalForce += direction * m_Player.CrawlerSettings.InAirMoveSpeed;
+            finalForce += direction * moveSpeed;
         }
+
+        
 
         m_Player.Motor.MovePlayer(finalForce);
     }

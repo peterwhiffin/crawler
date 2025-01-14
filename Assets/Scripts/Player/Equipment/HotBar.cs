@@ -10,7 +10,12 @@ public class HotBar : MonoBehaviour
     [SerializeField] private Equipment m_SelectedEquipment;
     [SerializeField] private Grapple m_Grapple;
     [SerializeField] private List<Equipment> m_AllHotbarItems;
+
+    [SerializeField] private EmptyEventChannel m_HotbarSelectionEventChannel;
+
     private int m_CurrentHotbarIndex;   
+
+    public int CurrentHotbarIndex { get { return m_CurrentHotbarIndex; } }
 
     public bool IsAttacking { get {  return m_PrimaryAttackInput; } }
 
@@ -18,26 +23,40 @@ public class HotBar : MonoBehaviour
     {
         m_Player.Stats.Died += OnPlayerDied;
         m_Grapple.GrappleHit += OnGrappleHit;
+        m_Grapple.GrappleReleased += OnGrappleReleased;
     }
 
     private void OnDestroy()
     {
         m_Player.Stats.Died -= OnPlayerDied;
         m_Grapple.GrappleHit -= OnGrappleHit;
+        m_Grapple.GrappleReleased -= OnGrappleReleased;
+    }
+
+    private void OnGrappleReleased()
+    {
+        m_Player.Motor.IsGrappled = false;
+    }
+
+    public void ReelGrapple()
+    {
+        m_Grapple.ReelGrapple();
     }
 
     public void OnScrollHotbarInput(InputAction.CallbackContext context)
     {
         if (context.started)
-        {
+        {            
             m_CurrentHotbarIndex++;
 
             if(m_CurrentHotbarIndex >= m_AllHotbarItems.Count)
             {
                 m_CurrentHotbarIndex = 0;
             }
-
+            m_SelectedEquipment.Deactivate();
             m_SelectedEquipment = m_AllHotbarItems[m_CurrentHotbarIndex];
+            m_SelectedEquipment.Activate();
+            m_HotbarSelectionEventChannel.RaiseEvent();
         }
     }
 
