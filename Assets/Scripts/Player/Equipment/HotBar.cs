@@ -22,15 +22,17 @@ public class HotBar : MonoBehaviour
     private void Start()
     {
         m_Player.Stats.Died += OnPlayerDied;
-        m_Grapple.GrappleHit += OnGrappleHit;
+        m_Grapple.GrappleHitSecure += OnGrappleHit;
         m_Grapple.GrappleReleased += OnGrappleReleased;
+        m_Grapple.GrappleReelingObject += OnGrappleHitReelable;
     }
 
     private void OnDestroy()
     {
         m_Player.Stats.Died -= OnPlayerDied;
-        m_Grapple.GrappleHit -= OnGrappleHit;
+        m_Grapple.GrappleHitSecure -= OnGrappleHit;
         m_Grapple.GrappleReleased -= OnGrappleReleased;
+        m_Grapple.GrappleReelingObject -= OnGrappleHitReelable;
     }
 
     private void OnGrappleReleased()
@@ -100,6 +102,11 @@ public class HotBar : MonoBehaviour
 
     private void OnGrappleHit(Vector2 position, float forceMod)
     {
-        m_Player.Motor.HookGrapple(position, forceMod);
+        m_Player.Motor.HookGrapple(position, forceMod, false);
+    }
+
+    private void OnGrappleHitReelable(Vector2 position, float forceMod)
+    {
+        m_Player.Motor.HookGrapple(position, forceMod, true);
     }
 }

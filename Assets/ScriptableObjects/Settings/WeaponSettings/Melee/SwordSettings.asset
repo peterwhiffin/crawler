@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <FireRate>k__BackingField: 1
   <Damage>k__BackingField: 150
-  <HitCheckRadius>k__BackingField: 0
+  <HitCheckRadius>k__BackingField: 1.36
   <FireSound>k__BackingField: {fileID: 8300000, guid: ab297b593498a6e47ba84de770477cbe, type: 3}
   <HitMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 832
   <MinimumAudioTime>k__BackingField: 0
   <IsAudioOneShot>k__BackingField: 1
-  <AttackDistance>k__BackingField: 3
+  <AttackDistance>k__BackingField: 1.25
   <HitEffectPrefab>k__BackingField: {fileID: 5007869118803100165, guid: 422d6f32c799a314990b5ba444386416, type: 3}

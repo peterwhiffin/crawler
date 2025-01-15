@@ -57,7 +57,14 @@ public class PlayerStretchState : PlayerGroundedState
             }
             else if (!m_IsLaunchQueued)
             {
-                m_StateMachine.ChangeState(m_Player.IdleState);
+                if (m_Player.Motor.m_ReelingObject)
+                {
+                    m_StateMachine.ChangeState(m_Player.GrappleState);
+                }
+                else
+                {
+                    m_StateMachine.ChangeState(m_Player.IdleState);
+                }
             }
         }
 
@@ -86,7 +93,7 @@ public class PlayerStretchState : PlayerGroundedState
             {
                 if (m_Player.Motor.IsPlayerAtMaxDistance())
                 {
-                   finalForce += m_Player.Motor.RestrainToRestPosition();
+                   finalForce += m_Player.Motor.GetRestPositionRestraintForce();
                 }
 
                 finalForce += m_Player.Motor.GetMoveForce(m_InputHandler.MoveInput);
@@ -100,7 +107,7 @@ public class PlayerStretchState : PlayerGroundedState
 
                 if (m_Player.Motor.IsPlayerAtMaxStretchDistance())
                 {
-                    finalForce += m_Player.Motor.RestrainToRestPosition();
+                    finalForce += m_Player.Motor.GetRestPositionRestraintForce();
                 }
             }
 

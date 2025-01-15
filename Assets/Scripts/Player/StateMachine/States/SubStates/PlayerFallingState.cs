@@ -30,35 +30,11 @@ public class PlayerFallingState : PlayerInAirState
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
         m_Player.Animation.SetCapsulePosition(m_Player.PlayerInput.MoveInput);
-        //if (Time.time - m_TimeEntered > m_Player.Motor.GetLaunchTime() && m_Player.Motor.IsPlayersVelocityBelowLandingThreshold())
-        //{
 
-        //    m_Player.Motor.CheckLegsWithoutPosition();
-        //    m_Player.Motor.CheckCurrentLeg();
-
-        //    if (m_Player.Motor.EnoughLegsToWalk())
-        //    {
-        //        m_StateMachine.ChangeState(m_Player.IdleState);
-        //    }
-
-        //}
-
-        //if (m_Player.Motor.CanPlayerLand(m_TimeEntered))
-        //{
-        //    m_Player.Motor.CheckLegsWithoutPosition();
-        //    m_Player.Motor.CheckCurrentLeg();
-
-        //    if (m_Player.Motor.EnoughLegsToWalk())
-        //    {
-        //        m_StateMachine.ChangeState(m_Player.IdleState);
-        //    }
-
-        //}
 
         if (!m_InputHandler.JumpInput)
         {
             m_Land = true;
-            //m_InputHandler.JumpInput = false;
         }
 
 
@@ -67,12 +43,17 @@ public class PlayerFallingState : PlayerInAirState
             m_Player.Motor.CheckLegsWithoutPosition();
             m_Player.Motor.CheckCurrentLeg();
 
-            if (m_InputHandler.JumpInput && m_Player.Motor.IsGrappled)
+            if (m_InputHandler.JumpInput && m_Player.Motor.IsGrappled || m_Player.Motor.m_ReelingObject)
             {
                 m_StateMachine.ChangeState(m_Player.GrappleState);
             }
             else if (m_Player.Motor.EnoughLegsToWalk())
             {
+                if (m_Player.Motor.IsGrappled)
+                {
+                    m_Player.Hotbar.ReelGrapple();
+                }
+
                 m_StateMachine.ChangeState(m_Player.IdleState);
             }
 

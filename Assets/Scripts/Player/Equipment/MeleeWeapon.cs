@@ -10,6 +10,8 @@ public class MeleeWeapon : Equipment
     [SerializeField] private MeleeSettings m_Settings;
     [SerializeField] private AudioSource m_AudioSource;
     [SerializeField] private Player m_Player;
+    [SerializeField] private Transform m_FirePosition;
+    [SerializeField] private Transform M_FireEffectPosition;
 
     private void Start()
     {
@@ -31,25 +33,25 @@ public class MeleeWeapon : Equipment
         {
             m_LastFireTime = Time.time;
             Vector3 direction = transform.right;
-            RaycastHit2D hit;
 
-            if (m_Settings.HitCheckRadius != 0f)
-            {
-                hit = Physics2D.CircleCast(transform.position, m_Settings.HitCheckRadius, direction, m_Settings.AttackDistance, m_Settings.HitMask);
-            }
-            else
-            {
-                hit = Physics2D.Raycast(transform.position, direction, m_Settings.AttackDistance, m_Settings.HitMask);
-            }
+            RaycastHit2D[] multiHit = Physics2D.CircleCastAll(m_FirePosition.position, m_Settings.HitCheckRadius, direction, m_Settings.AttackDistance, m_Settings.HitMask);
+            
+            //else
+            //{
+            //    hit = Physics2D.Raycast(m_FirePosition.position, direction, m_Settings.AttackDistance, m_Settings.HitMask);
+            //}
 
-            if (hit)
+            if (multiHit.Length > 0)
             {
-                if (hit.collider.TryGetComponent(out IHittable hittable))
+                foreach(RaycastHit2D hit in multiHit)
                 {
-                    hittable.Hit(m_Settings.Damage, hit.point, hit.normal);
-                }
+                    if (hit.collider.TryGetComponent(out IHittable hittable))
+                    {
+                        hittable.Hit(m_Settings.Damage, hit.point, hit.normal);
+                    }
 
-                SpawnHitEffect(hit.point, hit.normal);
+                    SpawnHitEffect(hit.point, hit.normal);
+                }
             }
 
             if (m_Settings.IsAudioOneShot)
@@ -66,7 +68,13 @@ public class MeleeWeapon : Equipment
                 }
             }
 
-            m_Player.Animation.PlaySwordAttack();
+
+            if(m_Settings.FireEffect != null)
+            {
+                Instantiate(m_Settings.FireEffect, M_FireEffectPosition.position, M_FireEffectPosition.rotation);
+            }
+
+            //m_Player.Animation.PlaySwordAttack();
         }
 
         return false;

@@ -154,3 +154,4 @@ MonoBehaviour:
   <InAirLinearDamping>k__BackingField: 0.1
   <OnGroundLinearDamping>k__BackingField: 10
   <MaxInAirSpeed>k__BackingField: 12
+  <JumpInterval>k__BackingField: 0.5

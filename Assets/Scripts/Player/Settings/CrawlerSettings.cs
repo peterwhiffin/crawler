@@ -50,4 +50,5 @@ public class CrawlerSettings : ScriptableObject
     [field: SerializeField] public float InAirLinearDamping { get; private set; }
     [field: SerializeField] public float OnGroundLinearDamping { get; private set; }
     [field: SerializeField] public float MaxInAirSpeed { get; private set; }
+    [field: SerializeField] public float JumpInterval {  get; private set; }
 }

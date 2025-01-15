@@ -31,16 +31,20 @@ public class PlayerIdleState : PlayerGroundedState
         {
             //m_Player.Motor.CheckCurrentLeg();
         }
-        
 
+        m_Player.Motor.CheckLegsIdle();
         m_Player.Motor.SetRestPosition();
         m_Player.LookAtCursor();
-        
-        if (m_InputHandler.StretchInput)
+
+        if (m_Player.Motor.m_ReelingObject)
+        {
+            m_StateMachine.ChangeState(m_Player.GrappleState);
+        }
+        else if (m_InputHandler.StretchInput)
         {
             m_StateMachine.ChangeState(m_Player.StretchState);
         }
-        else if (m_InputHandler.JumpInput)
+        else if (m_InputHandler.JumpInput && m_Player.Motor.CanJump())
         {
             m_StateMachine.ChangeState(m_Player.JumpState);
         }
@@ -54,11 +58,11 @@ public class PlayerIdleState : PlayerGroundedState
     {
         base.FixedUpdate();
 
-        Vector2 finalForce = m_Player.Motor.FloatOffTerrain();
+        Vector2 finalForce = m_Player.Motor.GetPlayerFloatForce();
 
         if (m_Player.Motor.IsPlayerAtMaxDistance())
         {
-            finalForce += m_Player.Motor.RestrainToRestPosition();
+            finalForce += m_Player.Motor.GetRestPositionRestraintForce();
         }
 
         if (m_Player.Motor.IsGrappled)

@@ -17,7 +17,6 @@ public class PlayerMotor : MonoBehaviour
     
     [SerializeField] private Player m_Player;
     [SerializeField] private List<Leg> m_Legs = new();    
-    //[SerializeField] private CrawlerSettings m_CrawlerSettings;
     [SerializeField] private Rigidbody2D m_RigidBody;     
     [SerializeField] private Transform m_RestPosition;
     [SerializeField] private LayerMask m_LegLayerMask;
@@ -27,12 +26,9 @@ public class PlayerMotor : MonoBehaviour
     public Vector2 GrapplePosition;
     private float m_LaunchTimer;
     private float m_GrappleForceMod;
-    private int m_LegSearchCounter = 0;
-    private bool m_StepTargetFound = false;
     private float m_GrappleRopeDistance = 0f;
-
-
-    public Rigidbody2D Rigidbody {  get { return m_RigidBody; } }
+    public bool m_ReelingObject = false;
+    private float m_LastJumpTime;
     private void Awake()
     {
         m_Contacts = new ContactPoint2D[m_MaxContacts];
@@ -52,16 +48,20 @@ public class PlayerMotor : MonoBehaviour
     public Vector2 GetGrappleForce()
     {
         IsGrappled = false;
+        m_ReelingObject = false;
         return m_Player.CrawlerSettings.GrappleForce * m_GrappleForceMod * (GrapplePosition - (Vector2)transform.position).normalized;
     }
 
-    public void HookGrapple(Vector2 position, float forceMod)
+    public void HookGrapple(Vector2 position, float forceMod, bool reelingObject)
     {
         IsGrappled = true;
+        m_ReelingObject = reelingObject;
         GrapplePosition = position;
         m_GrappleForceMod = forceMod;
         m_GrappleRopeDistance = Vector2.Distance(transform.position, position);
     }
+
+    
 
     public Vector2 GetGrappleConstraint()
     {
@@ -86,6 +86,12 @@ public class PlayerMotor : MonoBehaviour
         m_RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
         m_RigidBody.linearDamping = 10f;
     }
+
+    public void Jump()
+    {
+        m_LastJumpTime = Time.time;
+    }
+
 
     public void LaunchPlayer()
     {
@@ -160,11 +166,6 @@ public class PlayerMotor : MonoBehaviour
         return canLand;
     }
 
-    public bool IsPlayersVelocityBelowLandingThreshold()
-    {
-        return m_RigidBody.linearVelocity.magnitude < m_Player.CrawlerSettings.LaunchHitVelocityThreshold;
-    }
-
     public Vector2 GetMoveForce(Vector2 moveInput)
     {
         return m_Player.CrawlerSettings.MoveSpeed * moveInput.normalized;
@@ -177,7 +178,7 @@ public class PlayerMotor : MonoBehaviour
         return direction * m_Player.CrawlerSettings.MoveSpeed;
     }
 
-    public Vector2 RestrainToRestPosition()
+    public Vector2 GetRestPositionRestraintForce()
     {
         float restPositionVelocity = (m_RestPosition.position - m_LastRestPosition).magnitude;
         Vector2 direction = m_RestPosition.position - transform.position;
@@ -186,7 +187,7 @@ public class PlayerMotor : MonoBehaviour
         float spring = distance > m_Player.CrawlerSettings.MaxSpringStretch ? (m_Player.CrawlerSettings.MoveSpeed / distance) + (Mathf.Clamp(distance - m_Player.CrawlerSettings.MaxSpringStretch - .3f, 0, 10f) * (m_Player.CrawlerSettings.MoveSpeed / distance))  : m_Player.CrawlerSettings.SpringForce;
         return direction.normalized * ((distance * spring) - (velocity * m_Player.CrawlerSettings.DampForce));
     }
-    public Vector2 FloatOffTerrain()
+    public Vector2 GetPlayerFloatForce()
     {
         m_TempHits.Clear();
         Vector2 finalForce = Vector2.zero;
@@ -232,7 +233,6 @@ public class PlayerMotor : MonoBehaviour
             }
         }
 
-        //restPosition /= counter + 1;
         if (counter > 0)
         {
             restPosition /= counter;
@@ -253,6 +253,8 @@ public class PlayerMotor : MonoBehaviour
 
     public void CheckLegsWithoutPosition()
     {
+        return;
+
         m_TempLegs.Clear();
         foreach (var leg in m_LegsWithoutPosition)
         {
@@ -328,13 +330,30 @@ public class PlayerMotor : MonoBehaviour
         }
     }
 
+    public bool CanJump()
+    {
+        return EnoughLegsToWalk() && Time.time - m_LastJumpTime > m_Player.CrawlerSettings.JumpInterval;
+    }
+
+    public void CheckLegsIdle()
+    {
+        if (m_LegsWithoutPosition.Count == 0)
+            return;
+
+        CheckCurrentLeg();
+
+    }
+
     public void CheckCurrentLeg()
     {
-        if (!m_Legs[m_LegIndex].IsDoneMoving())
+        if (!m_Legs[m_LegIndex].IsDoneMoving() && m_LegsWithoutPosition.Count == 0)
         {    
             return;
         }
+
         
+        
+
         int nextIndex = m_LegIndex + 1;
 
         if (nextIndex == m_Legs.Count)
@@ -343,35 +362,6 @@ public class PlayerMotor : MonoBehaviour
         }
 
         m_LegIndex = nextIndex;
-
-        //bool foundHit = false;
-
-        //for(int i = 0; i < m_Legs.Count; i++)
-        //{
-        //    if (GetLegHits(m_Legs[nextIndex].Orientation))
-        //    {
-        //        foundHit = true;
-        //        break;
-        //    }
-        //    else if(Vector3.Distance(m_Legs[nextIndex].TargetPosition, m_BestHit.point) < m_Player.CrawlerSettings.MinimumLegMoveDistance)
-        //    {
-        //        CheckLegDistance(m_Legs[nextIndex]);
-        //    }
-
-        //    nextIndex++;
-
-        //    if(nextIndex == m_Legs.Count)
-        //    {
-        //        nextIndex = 0;
-        //    }
-        //}
-
-        //m_LegIndex = nextIndex;
-
-        //if (!foundHit)
-        //{
-        //    return;
-        //}
 
         if (!GetLegHits(m_Legs[nextIndex].Orientation))
         {
@@ -382,6 +372,11 @@ public class PlayerMotor : MonoBehaviour
         {
             CheckLegDistance(m_Legs[nextIndex]);
             return;
+        }
+
+        if (m_LegsWithoutPosition.Contains(m_Legs[m_LegIndex]))
+        {
+            m_LegsWithoutPosition.Remove(m_Legs[m_LegIndex]);
         }
 
         m_Legs[m_LegIndex].SetTarget(m_BestHit.transform, m_BestHit.point, m_BestHit.normal);
@@ -500,10 +495,6 @@ public class PlayerMotor : MonoBehaviour
                 return true;
             }
         }
-        //m_TempHits.Clear();
-
-        //m_TempHits.Add(originToUp);
-        //m_TempHits.Add(originToForward);
 
         return FindFarthestHit();
     }

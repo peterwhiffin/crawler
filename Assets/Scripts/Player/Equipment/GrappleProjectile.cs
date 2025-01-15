@@ -6,7 +6,7 @@ public class GrappleProjectile : MonoBehaviour
     [SerializeField] private float m_MaxLifeTime;
     [SerializeField] private GameObject m_HitPrefab;
     [SerializeField] private LayerMask m_HitMask;
-    private bool m_hasFired = false;
+    public bool m_hasFired = false;
     private float m_LifeTime = 0f;
     private Vector3 m_PreviousPosition;
     private float m_Damage = 0f;
@@ -33,9 +33,6 @@ public class GrappleProjectile : MonoBehaviour
             return;
 
         CheckHit();
-
-        
-
         Move();
     }
 
@@ -64,20 +61,19 @@ public class GrappleProjectile : MonoBehaviour
 
                 if (canReelObjectIn)
                 {
-                    m_Grapple.ReelObjectIn(hit.point, grappleable);
+                    m_Grapple.GrappleHitReelable(hit.point, grappleable);
                 }
                 else
                 {
-                    m_Grapple.ReelPlayerIn(hit.point);
+                    m_Grapple.GrappleHitStructure(hit.point);
                 }
             }
             else
             {
-                m_Grapple.ReelPlayerIn(hit.point);
+                m_Grapple.GrappleHitStructure(hit.point);
             }
 
             SpawnHitEffect(hit.point, hit.normal);
-            //Destroy(gameObject);
         }
     }
 
@@ -95,7 +91,6 @@ public class GrappleProjectile : MonoBehaviour
         }
 
         TravelDistance += m_Speed * Time.deltaTime;
-        //m_LifeTime += Time.deltaTime;
     }
 
     private void SpawnHitEffect(Vector3 position, Vector3 normal)

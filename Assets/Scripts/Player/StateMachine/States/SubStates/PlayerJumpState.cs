@@ -28,16 +28,14 @@ public class PlayerJumpState : PlayerAbilityState
             if (m_InputHandler.MoveInput != Vector2.zero)
             {
                 direction += (Vector2.up * m_InputHandler.MoveInput.y) + (Vector2.right * m_InputHandler.MoveInput.x);
-
-
             }
 
             direction = direction.normalized;
 
             m_Player.Motor.LaunchPlayer();
+            m_Player.Motor.Jump();
             m_Player.Motor.MovePlayer(direction * m_Player.CrawlerSettings.JumpForce, ForceMode2D.Impulse);
             m_IsAbilityDone = true;
-
         } 
     }
 

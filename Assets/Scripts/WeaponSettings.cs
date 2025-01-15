@@ -8,5 +8,6 @@ public class WeaponSettings : ScriptableObject
     [field: SerializeField] public AudioClip FireSound { get; private set; }
     [field: SerializeField] public LayerMask HitMask { get; private set; }
     [field: SerializeField] public float MinimumAudioTime { get; private set; }
-    [field: SerializeField] public bool IsAudioOneShot { get; private set; }    
+    [field: SerializeField] public bool IsAudioOneShot { get; private set; }   
+    [field: SerializeField] public GameObject FireEffect { get; private set; }
 }
