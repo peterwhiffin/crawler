@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using TMPro;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IInteractable
 {
     private StateMachine m_StateMachine;
 
@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     [field: SerializeField] public PlayerAnimation Animation { get; private set; }
     [field: SerializeField] public HitBox HitBox { get; private set; }
     [field: SerializeField] public PlayerStats Stats { get; private set; }
+    [field: SerializeField] public Selector Selector { get; private set; }
     public CrawlerSettings CrawlerSettings { get { return m_CrawlerSettings; } }
     public InputHandler PlayerInput { get { return m_InputHandler; } }
 

@@ -3,11 +3,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyAnimation : Animation
+public class EnemyAnimation : AnimationController
 {
     [SerializeField] private GameObject HealthbarPrefab;
     [SerializeField] private Enemy m_Enemy;
-    [SerializeField] private Slider m_HealthBar;
+    //[SerializeField] private Slider m_HealthBar;
     [SerializeField] SpriteRenderer m_SpriteRenderer;
     [SerializeField] private float m_FlashDuration;
     [SerializeField] private Transform m_HealthbarPosition;
@@ -20,12 +20,12 @@ public class EnemyAnimation : Animation
     {
         m_Enemy.Stats.Damaged -= OnDamaged;
         OnUpdate -= On_Update;
-        Destroy(m_HealthBar.gameObject);
+        //Destroy(m_HealthBar.gameObject);
     }
 
-    public void Initialize(Slider healthbar)
+    public void Initialize()
     {
-        m_HealthBar = healthbar;
+
         m_Enemy.Stats.Damaged += OnDamaged;
         OnUpdate += On_Update;
     }
@@ -35,16 +35,21 @@ public class EnemyAnimation : Animation
         OnUpdate.Invoke();
     }
 
+    public void UpdateMove(bool move)
+    {
+        m_Animator.SetBool("Move", move);
+    }
+
     private void On_Update()
     {
-        m_HealthBar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
+        //m_HealthBar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
     }
 
     public override void OnDamaged(float damage)
     {
         base.OnDamaged(damage);
 
-        m_HealthBar.value = m_Enemy.Stats.CurrentHealth / m_Enemy.Settings.MaxHealth;
+        //m_HealthBar.value = m_Enemy.Stats.CurrentHealth / m_Enemy.Settings.MaxHealth;
 
         PlayHitAnimation();
     }

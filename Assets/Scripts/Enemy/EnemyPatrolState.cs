@@ -10,6 +10,7 @@ public class EnemyPatrolState : EnemyState
     {
         base.Enter();
         m_Enemy.Motor.SetNextPatrolTarget();
+        m_Enemy.Animation.UpdateMove(true);
     }
 
     public override void Exit()
@@ -33,7 +34,7 @@ public class EnemyPatrolState : EnemyState
 
         m_Enemy.Motor.Patrol();
 
-        if (m_Enemy.Motor.CanSeePlayer())
+        if (!m_Enemy.Settings.IsPassive && m_Enemy.Motor.CanSeePlayer())
         {
             if (m_Enemy.Motor.PlayerWithinAttackRange())
             {

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004f1fac2faa2884891ea1674e50ce23, type: 3}
+  m_Name: SweeperBot
+  m_EditorClassIdentifier: 
+  m_EnemyPrefab: {fileID: 7094747583190808964, guid: dc612c0fa8768984aaf5c777a24b6489, type: 3}
+  <MoveSpeed>k__BackingField: 4.07
+  <IdleTime>k__BackingField: 3
+  <PursueSpeed>k__BackingField: 1
+  <FieldOfView>k__BackingField: 180
+  <SightDistance>k__BackingField: 6.94
+  <EnvironmentMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 192
+  <PlayerMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 0
+  <AttackDistance>k__BackingField: 10
+  <MaxHealth>k__BackingField: 500
+  <GuaranteedDrops>k__BackingField:
+  - {fileID: 11400000, guid: 27fd347d4d65b8948ae9b3fde7c4f01a, type: 2}
+  <IsPassive>k__BackingField: 1

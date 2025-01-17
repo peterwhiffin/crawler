@@ -70,6 +70,7 @@ public class GrappleProjectile : MonoBehaviour
             }
             else
             {
+                transform.SetParent(hit.transform);
                 m_Grapple.GrappleHitStructure(hit.point);
             }
 

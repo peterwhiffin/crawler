@@ -13,6 +13,7 @@ public class EnemyIdleState : EnemyState
         base.Enter();
         m_EnterTime = Time.time;
         m_Enemy.Motor.ClearPlayerPositionHistory();
+        m_Enemy.Animation.UpdateMove(false);
     }
 
     public override void Exit()
@@ -34,7 +35,7 @@ public class EnemyIdleState : EnemyState
     {
         base.Update();
 
-        if (m_Enemy.Motor.CanSeePlayer())
+        if (!m_Enemy.Settings.IsPassive && m_Enemy.Motor.CanSeePlayer())
         {
             if (m_Enemy.Motor.PlayerWithinAttackRange())
             {

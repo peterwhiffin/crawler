@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SpawnZone : MonoBehaviour
 {
-    [SerializeField] private Enemy m_EnemyPrefab;
+    [SerializeField] private EnemySettings m_Enemy;
 
     [SerializeField] private Transform m_SpawnPosition;
     [SerializeField] List<Transform> m_PatrolPositions;
@@ -42,10 +42,10 @@ public class SpawnZone : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        Slider healthBar = Instantiate(m_HealthbarPrefab, m_HealthbarParent);
-        Enemy enemy = Instantiate(m_EnemyPrefab);
+        //Slider healthBar = Instantiate(m_HealthbarPrefab, m_HealthbarParent);
+        Enemy enemy = Instantiate(m_Enemy.m_EnemyPrefab);
         enemy.transform.position = m_SpawnPosition.position;
-        enemy.Initialize(m_Player, healthBar, this);
+        enemy.Initialize(m_Player, this);
         enemy.Stats.Died += OnEnemyDied;
         m_CurrentEnemy = enemy;
     }

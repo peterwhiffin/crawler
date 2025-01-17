@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-public class PlayerAnimation : Animation
+public class PlayerAnimation : AnimationController
 {
     [SerializeField] private Player m_Player;
     [SerializeField] private Transform m_Graphic;

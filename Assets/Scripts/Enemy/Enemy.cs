@@ -18,8 +18,6 @@ public class Enemy : MonoBehaviour
     [field: SerializeField] public HitBox HitBox { get; private set; }
     [field: SerializeField] public EnemyStats Stats { get; private set; }
 
-   
-
     private void CreateStates()
     {
         m_StateMachine = new StateMachine();
@@ -32,10 +30,10 @@ public class Enemy : MonoBehaviour
         
     }
 
-    public void Initialize(Player player, Slider healthbar, SpawnZone zone)
+    public void Initialize(Player player, SpawnZone zone)
     {
         Player = player;
-        Animation.Initialize(healthbar);
+        Animation.Initialize();
         Motor.Initialize(zone);
         Stats.Died += OnEnemyDied;
         CreateStates();
